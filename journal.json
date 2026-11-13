@@ -9,60 +9,15 @@
   },
   "rmwfeued0ffy1": {
    "id": "rmwfeued0ffy1",
-   "date": "2026-11-13",
-   "tpl": "",
-   "name": "Renfo",
-   "rpe": null,
-   "note": "",
-   "t": 1794600594808,
-   "items": [
-    {
-     "sets": [
-      {
-       "r": 20,
-       "kg": 8
-      },
-      {
-       "r": 20,
-       "kg": 8
-      },
-      {
-       "r": 20,
-       "kg": 8
-      }
-     ],
-     "ex": "biceps"
-    }
-   ]
+   "del": true,
+   "t": 1794601093791
   },
   "rmwfev48vv7fa": {
    "id": "rmwfev48vv7fa",
-   "date": "2026-11-13",
-   "tpl": "",
-   "name": "Renfo",
-   "rpe": null,
-   "note": "",
-   "t": 1794600616557,
-   "items": [
-    {
-     "sets": [
-      {
-       "r": 30,
-       "kg": 0
-      },
-      {
-       "r": 30,
-       "kg": 0
-      },
-      {
-       "r": 30,
-       "kg": 0
-      }
-     ],
-     "ex": "fb"
-    }
-   ]
+   "del": true,
+   "t": 1794601090473
   }
  },
- "notes": {}
+ "notes": {},
+ "exos": {}
 }
