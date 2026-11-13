@@ -1,6 +1,6 @@
 /* Hors ligne : réseau d'abord (les mises à jour arrivent tout de suite),
    copie enregistrée si pas de réseau. */
-const CACHE = "coach-trail-v10";
+const CACHE = "coach-trail-v11";
 const FILES = ["./", "index.html", "data.js", "sync.js", "manifest.webmanifest", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES.map((f) => new Request(f, { cache: "reload" })))).then(() => self.skipWaiting()));
