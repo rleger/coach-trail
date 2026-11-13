@@ -44,11 +44,12 @@
       headers: { "Authorization": "Bearer " + token(), "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
       body: body ? JSON.stringify(body) : undefined
     }).then(function(r){
-      if (r.status === 401) throw { kind: "auth" };
-      if (r.status === 403) throw { kind: "forbidden" };
-      if (r.status === 404) throw { kind: "missing" };
-      if (r.status === 409 || r.status === 422) throw { kind: "conflict" };
-      if (!r.ok) throw { kind: "http", status: r.status };
+      var where = method + " " + (path || "/");
+      if (r.status === 401) throw { kind: "auth", where: where };
+      if (r.status === 403) throw { kind: "forbidden", where: where };
+      if (r.status === 404) throw { kind: "missing", where: where };
+      if (r.status === 409 || r.status === 422) throw { kind: "conflict", where: where, status: r.status };
+      if (!r.ok) throw { kind: "http", status: r.status, where: where };
       return r.status === 204 ? null : r.json();
     }, function(){ throw { kind: "net" }; });
   }
@@ -57,7 +58,7 @@
 
   function ensureBranch(){
     return api("GET", "/git/ref/heads/" + BRANCH).catch(function(e){
-      if (e.kind !== "missing") throw e;
+      if (e.kind !== "missing" && e.kind !== "conflict") throw e;
       return api("GET", "").then(function(info){ return api("GET", "/git/ref/heads/" + (info.default_branch || "main")); })
         .then(function(ref){ return api("POST", "/git/refs", { ref: "refs/heads/" + BRANCH, sha: ref.object.sha }); });
     });
@@ -97,6 +98,7 @@
           e.kind === "forbidden" ? "La clé n'a pas le droit d'écrire dans ce dépôt (Contents : Read and write)." :
           e.kind === "missing" ? "Cette clé ne voit pas " + repo() + ". Dans la clé : Repository access → Only select repositories → coach-trail, et Contents en Read and write." :
           e.kind === "net" ? "GitHub injoignable. Nouvel essai plus tard." : "Erreur GitHub " + (e.status || "");
+        if (e && e.where) msg += " [" + (e.status || (e.kind === "missing" ? 404 : e.kind === "forbidden" ? 403 : e.kind === "auth" ? 401 : "")) + " · " + e.where + "]";
         setStatus(e && e.kind === "net" ? "off" : "error", msg);
         return false;
       });
