@@ -95,7 +95,7 @@
         var msg = !e ? "Erreur inconnue" :
           e.kind === "auth" ? "GitHub refuse la clé. Vérifie-la ou crée-en une nouvelle." :
           e.kind === "forbidden" ? "La clé n'a pas le droit d'écrire dans ce dépôt (Contents : Read and write)." :
-          e.kind === "missing" ? "Dépôt introuvable : " + repo() :
+          e.kind === "missing" ? "Cette clé ne voit pas " + repo() + ". Dans la clé : Repository access → Only select repositories → coach-trail, et Contents en Read and write." :
           e.kind === "net" ? "GitHub injoignable. Nouvel essai plus tard." : "Erreur GitHub " + (e.status || "");
         setStatus(e && e.kind === "net" ? "off" : "error", msg);
         return false;
