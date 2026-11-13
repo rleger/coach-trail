@@ -312,8 +312,8 @@ ul.tplx .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-
       <p class="muted small" style="margin-top:8px">Très courbaturant : 48 h minimum avant une SL ou une séance clé.</p></div>
     <div class="card"><div class="eyebrow">Qualité</div><h3>Côtes courtes</h3>
       <ul><li>15-20' d'échauffement, puis 8-10 × 1' à 1'15 en côte de 6 à 10 %</li><li>FC au-dessus de 167 en fin de répétition</li><li>Récup : descente trottinée jusqu'à FC sous 130</li></ul></div>
-    <div class="card"><div class="eyebrow">Qualité · le jeudi</div><h3>⚡ HIIT et 🚴 Zwift</h3>
-      <ul><li>Rotation sur 5 semaines : Zwift 5 × 3' Z5, 30/30 à VMA, Zwift 30/15, tapis en côte 6 × 2' à 8-10 %, Zwift 4 × 4'</li><li>15' d'échauffement progressif, 10' de retour au calme</li><li>FC au-dessus de 170 en fin de répétition, sinon c'est trop court ou trop facile</li><li>Zwift quand c'est un jour de boulot ou quand les jambes sont chargées : même stimulus cardio, aucun coût excentrique avant la SL</li></ul>
+    <div class="card"><div class="eyebrow">Qualité · 1 × par semaine</div><h3>⚡ HIIT, dehors</h3>
+      <ul><li>Progression : 30/30 à VMA en base (2 × 8 puis 3 × 8), puis 45" et 2' en côte, puis 3', 4' et 5' en construction, en alternant piste et côte</li><li>15' d'échauffement progressif, 10' de retour au calme</li><li>FC au-dessus de 170 en fin de répétition, sinon c'est trop court ou trop facile</li><li>Proposé le lundi sur la piste, à déplacer librement : au moins 48 h avant la SL</li><li>🚴 Zwift 5 × 3' en Z5 seulement si la météo rend la sortie impossible</li></ul>
       <p class="muted small" style="margin-top:8px">Pas de HIIT les semaines allégées, au Japon, au retour ni en affûtage. Une semaine sur deux en construction montagne.</p></div>
     <div class="card"><div class="eyebrow">Qualité</div><h3>Côtes longues</h3>
       <ul><li>3-4 × 8 à 12' à allure course : courir sous 12 %, marcher au-dessus de 15 %</li><li>FC 155-165, récup 3-4' en redescendant</li><li>Jusqu'aux Forts sans bâtons, mains sur les cuisses ; avec bâtons ensuite</li></ul></div>
@@ -412,8 +412,8 @@ var today = new Date(); today.setHours(0,0,0,0);
 function monday(d){ var x = new Date(d); x.setHours(0,0,0,0); var k = (x.getDay()+6)%7; x.setDate(x.getDate()-k); return x; }
 
 /* ---------- journal (synchronisé) ---------- */
-var J = LS.get('journal', null) || { v:1, done:{}, renfo:{}, notes:{}, exos:{}, tpls:{}, runs:{} };
-['done','renfo','notes','exos','tpls','runs'].forEach(function(k){ if (!J[k]) J[k] = {}; });
+var J = LS.get('journal', null) || { v:1, done:{}, renfo:{}, notes:{}, exos:{}, tpls:{}, runs:{}, moves:{} };
+['done','renfo','notes','exos','tpls','runs','moves'].forEach(function(k){ if (!J[k]) J[k] = {}; });
 /* migration des cases cochées de l'ancienne version */
 (function(){ var old = LS.get('done', null); if (old && typeof old === 'object'){ Object.keys(old).forEach(function(k){ if (!J.done[k]) J.done[k] = { v: !!old[k], t: 1 }; }); try{ localStorage.removeItem('done'); }catch(e){} saveJ(true); } })();
 function saveJ(silent){ LS.set('journal', J); if (!silent && APP.onSave) APP.onSave(); }
@@ -455,16 +455,32 @@ function kindOf(t){
 }
 function itemId(w, d, j){ return 'w'+w.n+'d'+d+'i'+j; }
 function isDone(id){ return !!(J.done[id] && J.done[id].v); }
+/* séances déplacées par Romain : J.moves[id] = { d: jour 0-6, t } */
+function effDays(w){
+  var out = [[],[],[],[],[],[],[]]; if (!w.days) return out;
+  w.days.forEach(function(its, d){ its.forEach(function(it, j){ var id = itemId(w, d, j), mv = J.moves && J.moves[id], nd = mv && !mv.del && mv.d != null ? mv.d : d; out[nd].push({ it: it, id: id, from: d, moved: nd !== d }); }); });
+  var ord = { race: 0, qual: 1, hiit: 1, sl: 1, piste: 2, z2: 2, tapis: 3, renfo: 4, info: 5 };
+  out.forEach(function(a){ a.sort(function(x, y){ return (ord[x.it.k]||9) - (ord[y.it.k]||9); }); });
+  return out;
+}
+var MVI = SV('<path d="M7 7h11l-3-3M17 17H6l3 3"/>');
 function dayItemsHtml(w, d, pref){
-  var its = (w.days && w.days[d]) || [];
+  var its = effDays(w)[d];
   if (!its.length) return '<div class="rest">Repos</div>';
-  return '<div class="its">'+its.map(function(it, j){ var id = itemId(w, d, j), on = isDone(id);
+  return '<div class="its">'+its.map(function(o){ var it = o.it, id = o.id, on = isDone(id);
     if (it.k === 'info') return '<div class="it info"><label>'+esc(it.t)+'</label></div>';
-    return '<div class="it '+(it.key?'key ':'')+(on?'done':'')+'"><input type="checkbox" id="'+pref+id+'" data-k="'+id+'" '+(on?'checked':'')+'><label class="k-'+it.k+'" for="'+pref+id+'"><span class="em" aria-hidden="true">'+emo(it)+'</span>'+esc(it.t)+'</label>'+(tplOf(it.t)?'<button type="button" class="ibtn" data-info="'+tplOf(it.t)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'</div>'; }).join('')+'</div>';
+    return '<div class="it '+(it.key?'key ':'')+(on?'done':'')+'"><input type="checkbox" id="'+pref+id+'" data-k="'+id+'" '+(on?'checked':'')+'><label class="k-'+it.k+'" for="'+pref+id+'"><span class="em" aria-hidden="true">'+emo(it)+'</span>'+esc(it.t)+(o.moved?' <span class="muted small">(prévu '+['lun','mar','mer','jeu','ven','sam','dim'][o.from]+')</span>':'')+'</label>'+(tplOf(it.t)?'<button type="button" class="ibtn" data-info="'+tplOf(it.t)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'<button type="button" class="ibtn" data-move="'+id+'" data-wn="'+w.n+'" aria-label="Déplacer à un autre jour">'+MVI+'</button></div>'; }).join('')+'</div>';
+}
+function openMove(id, wn){
+  var w = W[wn-1], cur = null; effDays(w).forEach(function(a, d){ a.forEach(function(o){ if (o.id === id) cur = o; }); }); if (!cur) return;
+  var d0 = pd(w.start), nd = (J.moves && J.moves[id] && !J.moves[id].del) ? J.moves[id].d : cur.from;
+  openInfo(infoHead('Déplacer')+'<p style="margin-top:2px">'+emo(cur.it)+' '+esc(cur.it.t)+'</p><div class="chips" style="margin-top:12px">'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(function(n, d){ var dd = new Date(d0); dd.setDate(dd.getDate()+d);
+    return '<span class="chip solo'+(d===nd?' primary':'')+'"><button type="button" data-mvto="'+d+'" data-mvid="'+id+'">'+n+' '+dd.getDate()+((w.work||[]).indexOf(d)>-1?' · boulot':'')+'</button></span>'; }).join('')+'</div>'+
+    '<p class="muted small" style="margin-top:10px">Prévu au départ le '+['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'][cur.from]+'. Choisir ce jour remet la séance à sa place.</p>');
 }
 function emo(it){
   var t = it.t || '';
-  if (it.k === 'hiit') return /Zwift/.test(t) ? '🚴' : '⚡';
+  if (it.k === 'hiit') return /^HIIT Zwift/.test(t) ? '🚴' : '⚡';
   if (it.k === 'sl') return /J2/.test(t) ? '🔁' : '🏔️';
   if (it.k === 'qual') return /Seuil/.test(t) ? '🎯' : /Openers/.test(t) ? '✨' : /plaisir/.test(t) ? '🎉' : /Descente/.test(t) ? '⬇️' : '📈';
   return { z2: '🏃', piste: '🏟️', tapis: '🏠', renfo: '🏋️', race: '🏁', info: 'ℹ️' }[it.k] || '•';
@@ -474,7 +490,7 @@ function shortTag(it){
   if (it.k === 'sl') return /J2/.test(it.t) ? 'J2 '+m : 'SL '+m;
   if (it.k === 'qual') return (it.t.match(/^(Côtes|Seuil|Openers|Séance plaisir|Descente)/)||['Qualité'])[0].replace('Séance plaisir','Plaisir');
   if (it.k === 'renfo') return 'Renfo';
-  if (it.k === 'hiit') return /Zwift/.test(it.t) ? 'Zwift' : 'HIIT';
+  if (it.k === 'hiit') return /^HIIT Zwift/.test(it.t) ? 'Zwift' : 'HIIT';
   if (it.k === 'race') return 'COURSE';
   if (it.k === 'tapis') return 'T '+m;
   if (it.k === 'piste') return 'P '+m;
@@ -501,7 +517,7 @@ function renderWeek(){
         return '<li class="'+(iso(dd)===iso(today)?'today':'')+'"><div class="dname">'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][d]+'<small>'+dd.getDate()+'</small>'+((w.work||[]).indexOf(d)>-1?'<em>boulot</em>':'')+'</div>'+dayItemsHtml(w, d, 'w')+'</li>'; }).join('')+'</ul>' : '<ul class="keys">'+keys+'</ul>')+
     ((w.float||[]).length ? '<div class="eyebrow" style="margin-top:12px">Sans jour fixe</div><ul class="plain small" style="margin:4px 0 0;padding-left:18px">'+w.float.map(function(f){ return '<li>'+esc(f.t)+'</li>'; }).join('')+'</ul>' : '')+
     (w.note?'<div class="note">'+esc(w.note)+'</div>':'')+
-    '<p class="muted small" style="margin-top:12px">'+(isRace?'Le reste de la semaine : repos, sommeil, hydratation.':'Placement indicatif : décale librement dans la semaine. Footings FC sous 150 sur le plat, mercredi off par défaut.')+'</p></div>'+
+    '<p class="muted small" style="margin-top:12px">'+(isRace?'Le reste de la semaine : repos, sommeil, hydratation.':'Placement indicatif : ⇄ pour déplacer une séance. Garde 48 h entre deux séances dures et la SL, footings FC sous 150 sur le plat.')+'</p></div>'+
     '<div class="card"><div class="eyebrow">Courses de la semaine</div>'+
     (runs.length ? '<div class="sess" style="margin-top:8px">'+runs.map(runItem).join('')+'</div>'+(isRace?'':'<p class="muted small" style="margin-top:6px">Reste '+hh(Math.max(0,Math.round((w.h-hDone)*4)/4))+' et '+Math.max(0,w.dp-dpDone).toLocaleString('fr-FR')+' m de D+.</p>') : '<p class="muted" style="margin-top:6px">Rien d\'enregistré : Claude ajoute chaque sortie quand tu lui envoies le FIT.</p>')+
     '<div class="eyebrow" style="margin-top:18px">Renfo de la semaine</div>'+
@@ -778,12 +794,15 @@ function tplInfo(k){
 }
 infoSheet.addEventListener('click', function(e){
   if (e.target === infoSheet || e.target.closest('[data-ci]')){ closeInfo(); return; }
+  var mt = e.target.closest('[data-mvto]'); if (mt){ var mid = mt.dataset.mvid, to = +mt.dataset.mvto, m0 = +(mid.match(/d(\d)i/)||[0,0])[1];
+    J.moves[mid] = to === m0 ? { del: true, t: Date.now() } : { d: to, t: Date.now() }; saveJ(); closeInfo(); refresh(); toast(to === m0 ? 'Séance remise à son jour' : 'Séance déplacée'); return; }
   var dp = e.target.closest('[data-delpreset]'); if (dp){ if (dp.dataset.arm){ J.tpls[dp.dataset.delpreset] = { id: dp.dataset.delpreset, del: true, t: Date.now() }; saveJ(); closeInfo(); if (ed) renderEditor(); else refresh(); toast('Preset supprimé'); } else { dp.dataset.arm = '1'; dp.textContent = 'Confirmer la suppression'; } return; }
   var g = e.target.closest('[data-infogo]'); if (!g) return; var k = g.dataset.infogo; closeInfo();
   if (ed){ readEditorFields(); var n0 = ed.items.length; addTpl(ed, k); renderEditor(firstRep(n0)); } else openEditor(newSession(k), true);
 });
 document.addEventListener('keydown', function(e){ if (e.key !== 'Escape') return; if (!infoSheet.hidden) closeInfo(); else if (!edSheet.hidden) closeEditor(); });
 document.addEventListener('click', function(e){
+  var mv = e.target.closest('[data-move]'); if (mv){ openMove(mv.dataset.move, +mv.dataset.wn); return; }
   var inf = e.target.closest('[data-info]'); if (inf && getT(inf.dataset.info)){ e.preventDefault(); openInfo(tplInfo(inf.dataset.info)); return; }
   var xi = e.target.closest('[data-exinfo]'); if (xi){ var x = exo(xi.dataset.exinfo); if (x) openInfo(infoHead(x.name)+'<p style="margin-top:4px">'+esc(x.cue||'')+'</p><p class="muted small" style="margin-top:8px">'+(x.unit==='sec'?'En secondes':'En répétitions')+(x.side?', par jambe':'')+'.</p>'); return; }
   if (e.target.closest('[data-opensync]')){ document.getElementById('syncBtn').click(); return; }
@@ -823,7 +842,7 @@ function renderCal(){
       var cls = 'day' + (d.getMonth() !== mo ? ' out' : '') + (sp ? ' span' : '') + (di === iso(today) ? ' today' : '') + (di === calSel ? ' sel' : '');
       h += '<button type="button" class="'+cls+'" data-day="'+di+'"'+(sp ? ' style="--c:var('+sp.c+')"' : '')+' aria-label="'+esc(fmt(d,{weekday:'long',day:'numeric',month:'long'}))+(ev.length ? ' : '+esc(ev.map(function(e){ return e.t; }).join(', ')) : '')+(rs.length ? ', '+rs.length+' renfo' : '')+'">'+
         '<span class="dn">'+d.getDate()+'</span>'+(rs.length || rr.length ? '<span class="dots">'+rr.map(function(){ return '<i class="run"></i>'; }).join('')+rs.map(function(x){ return '<i'+(x.mini?' class="mini"':'')+'></i>'; }).join('')+'</span>' : '')+
-        (w && w.days ? (w.days[k]||[]).filter(function(it){ return it.k !== 'info'; }).slice(0,3).map(function(it, j){ var jj = w.days[k].indexOf(it); return '<span class="tg k-'+it.k+(it.m >= 100 && /^(sl|z2|piste|tapis)$/.test(it.k) ? ' lg' : '')+(isDone(itemId(w,k,jj))?' ok':'')+'" title="'+esc(it.t)+'">'+emo(it)+(/^(sl|z2|piste|tapis)$/.test(it.k) && it.m ? '<span class="tm">'+esc(it.m + "'")+'</span>' : '')+'</span>'; }).join('') : '')+
+        (w && w.days ? effDays(w)[k].filter(function(o){ return o.it.k !== 'info'; }).slice(0,3).map(function(o){ var it = o.it; return '<span class="tg k-'+it.k+(it.m >= 100 && /^(sl|z2|piste|tapis)$/.test(it.k) ? ' lg' : '')+(isDone(o.id)?' ok':'')+'" title="'+esc(it.t)+'">'+emo(it)+(/^(sl|z2|piste|tapis)$/.test(it.k) && it.m ? '<span class="tm">'+esc(it.m + "'")+'</span>' : '')+'</span>'; }).join('') : '')+
         (pt ? '<span class="ev" style="--c:var('+pt.c+')">'+esc(pt.short)+'</span>' : sp && (di === sp.a || d.getDay() === 1) ? '<span class="ev" style="--c:var('+sp.c+')">'+esc(sp.short)+'</span>' : '')+'</button>';
       d.setDate(d.getDate() + 1);
     }
@@ -838,7 +857,7 @@ function renderCal(){
     (srr.length ? '<div class="sess" style="margin-top:10px">'+srr.map(runItem).join('')+'</div>' : '')+(srs.length ? '<div class="sess" style="margin-top:10px">'+srs.map(sessItem).join('')+'</div>' : (srr.length ? '' : '<p class="muted" style="margin-top:6px">Rien d\'enregistré ce jour.</p>'))+
     '<div class="eyebrow" style="margin-top:14px">Renfo ce jour</div>'+tplChips('new')+'</div>';
   if (sw){
-    var kl = []; (sw.days||[]).forEach(function(its, d){ its.forEach(function(it, j){ if (it.key && it.k !== 'info') kl.push({ it: it, d: d, id: itemId(sw, d, j) }); }); });
+    var kl = []; effDays(sw).forEach(function(its, d){ its.forEach(function(o){ if (o.it.key && o.it.k !== 'info') kl.push({ it: o.it, d: d, id: o.id }); }); });
     var keys = kl.map(function(o){ var on = isDone(o.id);
       return '<li class="'+(on?'done':'')+'"><input type="checkbox" id="k'+o.id+'" data-k="'+o.id+'" '+(on?'checked':'')+'><label for="k'+o.id+'"><span class="tag">'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][o.d]+' · '+kindOf(o.it.t)+'</span>'+esc(o.it.t)+'</label>'+(tplOf(o.it.t)?'<button type="button" class="ibtn" data-info="'+tplOf(o.it.t)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'</li>'; }).join('');
     var nr = renfoInWeek(sw.start).length;
@@ -869,11 +888,11 @@ function route(){
   if (v === 'semaine') renderWeek(); if (v === 'renfo') renderRenfo(); if (v === 'cal') renderCal();
   if (cur !== v) window.scrollTo(0,0); cur = v;
 }
-function refresh(){ J = LS.get('journal', J) || J; ['done','renfo','notes','exos','tpls','runs'].forEach(function(k){ if (!J[k]) J[k] = {}; }); route(); }
+function refresh(){ J = LS.get('journal', J) || J; ['done','renfo','notes','exos','tpls','runs','moves'].forEach(function(k){ if (!J[k]) J[k] = {}; }); route(); }
 
 window.APP = { esc: esc, toast: toast, refresh: refresh, onSave: null,
   readJournal: function(){ return JSON.parse(JSON.stringify(J)); },
-  writeJournal: function(s){ J = { v:1, done: s.done||{}, renfo: s.renfo||{}, notes: s.notes||{}, exos: s.exos||{}, tpls: s.tpls||{}, runs: s.runs||{} }; LS.set('journal', J); } };
+  writeJournal: function(s){ J = { v:1, done: s.done||{}, renfo: s.renfo||{}, notes: s.notes||{}, exos: s.exos||{}, tpls: s.tpls||{}, runs: s.runs||{}, moves: s.moves||{} }; LS.set('journal', J); } };
 
 document.getElementById('refreshBtn').onclick = function(){
   toast('Mise à jour…'); var jobs = [];

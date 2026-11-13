@@ -100,18 +100,45 @@ def qual_min(k):
     if 'Openers' in k: return 40
     return 60
 
-HIIT = [
-    ("HIIT Zwift : 5 × 3' en Z5 (FC > 170 en fin), récup 3' facile", 55),
-    ("HIIT piste ou tapis : 2 × 10 × 30/30 à VMA (3:30/km), 3' entre séries", 50),
-    ("HIIT Zwift : 2 × (10 × 30\" fort / 15\" facile), 5' entre séries", 50),
-    ("HIIT tapis en côte : 6 × 2' à 8-10 % (FC > 170), récup 2' en marchant", 50),
-    ("HIIT Zwift : 4 × 4' (FC 170-177), récup 3'", 55),
+# Progression HIIT, dehors en priorité (piste ou côte), Zwift seulement si météo
+HIIT_SEQ = [
+    # base : intervalles courts, on apprend à aller vite sans casser
+    "HIIT piste : 2 × 8 × 30/30 à VMA (3:30/km), 3' entre séries",
+    "HIIT piste : 2 × 10 × 30/30 à VMA, 3' entre séries",
+    "HIIT piste : 3 × 8 × 30/30 à VMA, 3' entre séries",
+    # base 2 : reprise puis on allonge
+    "HIIT piste : 2 × 10 × 30/30 à VMA (reprise après le Japon)",
+    "HIIT côte : 10 × 45\" en côte 6-8 %, récup descente trottinée",
+    "HIIT piste : 6 × 2' à 3:35/km, récup 2' trot",
+    # construction : intervalles longs, VO2max
+    "HIIT côte : 6 × 2' en côte 8-10 % (FC > 170), récup descente",
+    "HIIT piste : 5 × 3' à 3:40/km, récup 2'30 trot",
+    "HIIT côte : 5 × 3' en côte 6-8 %, récup descente",
+    "HIIT piste : 4 × 4' (FC 170-177), récup 3' trot",
+    "HIIT côte : 5 × 3'30 en côte 6-8 %, récup descente",
+    "HIIT piste : 5 × 4' (FC 170-177), récup 3' trot",
+    "HIIT côte : 4 × 5' en côte 6-8 %, récup descente",
+    # montagne : entretien, en côte longue
+    "HIIT côte : 5 × 3' en côte raide avec bâtons, récup descente",
+    "HIIT côte : 4 × 4' en côte avec bâtons, récup descente",
 ]
+def hiit_weeks():
+    out = []
+    for i, w in enumerate(weeks):
+        if w['phase'] not in ('BASE', 'BASE2', 'CONS', 'MONT') or i == 0: continue
+        if 'allégée' in (w['note'] or ''): continue
+        if w['phase'] == 'MONT' and i % 2: continue
+        out.append(i)
+    return out
+_HW = None
 def hiit_for(i, w):
-    if w['phase'] not in ('BASE', 'BASE2', 'CONS', 'MONT') or i == 0: return None
-    if 'allégée' in (w['note'] or ''): return None
-    if w['phase'] == 'MONT' and i % 2: return None
-    return HIIT[i % len(HIIT)]
+    global _HW
+    if _HW is None:
+        _HW = hiit_weeks()
+        mont = [j for j in _HW if weeks[j]['phase'] == 'MONT']
+        _HW = {j: (HIIT_SEQ[13 + mont.index(j) % 2] if j in mont else HIIT_SEQ[min(n, 12)]) for n, j in enumerate([j for j in _HW if j not in mont])} | {j: HIIT_SEQ[13 + n % 2] for n, j in enumerate(mont)}
+    t = _HW.get(i)
+    return (t + " · Zwift si météo", 50) if t else None
 
 def place(i, w):
     d0 = START + dt.timedelta(days=7 * i)
@@ -159,16 +186,16 @@ def place(i, w):
     for k in [k for k in other if k.startswith('J2')]:
         add(6, k, 'sl', mins(k) or 120, True); used += mins(k) or 120
     other = [k for k in other if not k.startswith('J2')]
-    # qualité : seuil sur la piste le lundi, le reste le mardi
-    for k in qual:
-        m = qual_min(k)
-        if 'Seuil' in k: add(0, k + ' (piste)', 'qual', m, True)
-        elif 'plaisir' in k: add(1, k, 'qual', m, True)
-        else: add(1, k + (' (ou tapis 10-12 % si météo)' if winter and 'Côtes' in k else ''), 'qual', m, True)
-        used += m
     hx = hiit_for(i, w)
     if hx:
-        add(3, hx[0], 'hiit', hx[1], True); used += hx[1]
+        add(0, hx[0], 'hiit', hx[1], True); used += hx[1]
+    # qualité : seuil sur la piste le lundi (mardi si HIIT), le reste le mardi
+    for k in qual:
+        m = qual_min(k)
+        if 'Seuil' in k: add(1 if hx else 0, k + (' (route plate ou piste)' if hx else ' (piste)'), 'qual', m, True)
+        elif 'plaisir' in k: add(1, k, 'qual', m, True)
+        else: add(1, k + '', 'qual', m, True)
+        used += m
     # renfo : force le mardi soir (jour dur), le second le jeudi
     rdays = [1, 3] if not in_japan[1] else [3, 1]
     for n, k in enumerate(renfo):

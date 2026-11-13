@@ -17,7 +17,7 @@
   }
   function merge(a, b){
     a = a || {}; b = b || {};
-    return { v: 1, done: mergeMap(a.done, b.done), renfo: mergeMap(a.renfo, b.renfo), notes: mergeMap(a.notes, b.notes), exos: mergeMap(a.exos, b.exos), tpls: mergeMap(a.tpls, b.tpls), runs: mergeMap(a.runs, b.runs) };
+    return { v: 1, done: mergeMap(a.done, b.done), renfo: mergeMap(a.renfo, b.renfo), notes: mergeMap(a.notes, b.notes), exos: mergeMap(a.exos, b.exos), tpls: mergeMap(a.tpls, b.tpls), runs: mergeMap(a.runs, b.runs), moves: mergeMap(a.moves, b.moves) };
   }
   function canon(s){
     s = merge(s, {});
