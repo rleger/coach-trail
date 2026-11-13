@@ -55,6 +55,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:.0
 .count i{width:8px;height:8px;border-radius:50%;background:var(--c);display:inline-block;align-self:center}
 .icon-btn{position:relative;font:inherit;font-size:16px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .icon-btn svg{width:19px;height:19px}
+#syncBtn{width:auto;padding:0 10px;gap:6px;font-size:13px;font-weight:600}
 #syncBtn .sdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:transparent}
 #syncBtn[data-state="ok"] .sdot{background:var(--ok)} #syncBtn[data-state="busy"] .sdot{background:var(--line2)}
 #syncBtn[data-state="off"] .sdot{background:var(--warn)} #syncBtn[data-state="error"] .sdot{background:var(--bad)}
@@ -174,7 +175,7 @@ textarea.input{min-height:72px;resize:vertical}
   <div class="hright">
     <div class="counts" id="counts"></div>
     <button type="button" class="icon-btn" id="themeBtn" aria-label="Thème"></button>
-    <button type="button" class="icon-btn" id="syncBtn" aria-label="Synchronisation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H8a5 5 0 1 1 .9-9.9A6 6 0 0 1 20 11.5a3.75 3.75 0 0 1-2.5 7.5z"/></svg><span class="sdot" aria-hidden="true"></span></button>
+    <button type="button" class="icon-btn" id="syncBtn" aria-label="Synchronisation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H8a5 5 0 1 1 .9-9.9A6 6 0 0 1 20 11.5a3.75 3.75 0 0 1-2.5 7.5z"/></svg><span class="sdot" aria-hidden="true"></span><span class="lbl">Sync</span></button>
   </div>
 </div></header>
 <nav class="tabs" aria-label="Sections"><div class="wrap" id="tabs">
@@ -451,6 +452,8 @@ function renderRenfo(){
     pk.map(function(k){ var p = prog[k]; return '<tr><td>'+esc(p.name)+'</td><td><span class="num">'+esc(p.last.s)+'</span><div class="when">'+fmt(pd(p.last.date))+'</div></td><td class="num">'+(p.best.kg ? String(p.best.kg).replace('.',',')+' kg × '+p.best.r : p.best.r+(p.unit==='sec'?' s':' rép.'))+'</td></tr>'; }).join('')+'</tbody></table></div>'
     : '<p class="muted" style="margin-top:6px">La progression apparaîtra après la première séance enregistrée.</p>')+
     '<div class="row"><button type="button" class="btn small" id="copyCoach">Copier le résumé pour Claude</button></div></div></div>';
+  var tokOn = false; try{ tokOn = !!localStorage.getItem('sync_token'); }catch(e){}
+  if (!tokOn) html += '<div class="card" style="border-color:var(--warn)"><div class="eyebrow">Synchronisation</div><p style="margin-top:4px">Pas encore connectée : le journal reste sur cet appareil seulement.</p><div class="row"><button type="button" class="btn primary" data-opensync="1">Connecter avec la clé GitHub</button></div></div>';
   html += '<div class="card"><div class="eyebrow">Historique</div>'+(L.length ? '<div class="sess" style="margin-top:8px">'+L.map(sessItem).join('')+'</div>' : '<p class="muted" style="margin-top:6px">Aucune séance pour l\'instant. Choisis un modèle ci-dessus : les exercices et le nombre de séries sont préremplis, tu n\'as qu\'à noter les répétitions et la charge.</p>')+'</div>';
   document.getElementById('v-renfo').innerHTML = html;
   var cb = document.getElementById('copyCoach'); if (cb) cb.onclick = copyCoach;
@@ -536,6 +539,7 @@ edSheet.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if (!edSheet.hidden && e.key === 'Escape') closeEditor(); });
 document.addEventListener('click', function(e){
+  if (e.target.closest('[data-opensync]')){ document.getElementById('syncBtn').click(); return; }
   var n = e.target.closest('[data-new]'); if (n){ openEditor(newSession(n.dataset.new), true); return; }
   var ed2 = e.target.closest('[data-edit]'); if (ed2 && J.renfo[ed2.dataset.edit]) openEditor(J.renfo[ed2.dataset.edit], false);
 });
