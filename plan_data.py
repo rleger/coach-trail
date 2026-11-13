@@ -100,6 +100,19 @@ def qual_min(k):
     if 'Openers' in k: return 40
     return 60
 
+HIIT = [
+    ("HIIT Zwift : 5 × 3' en Z5 (FC > 170 en fin), récup 3' facile", 55),
+    ("HIIT piste ou tapis : 2 × 10 × 30/30 à VMA (3:30/km), 3' entre séries", 50),
+    ("HIIT Zwift : 2 × (10 × 30\" fort / 15\" facile), 5' entre séries", 50),
+    ("HIIT tapis en côte : 6 × 2' à 8-10 % (FC > 170), récup 2' en marchant", 50),
+    ("HIIT Zwift : 4 × 4' (FC 170-177), récup 3'", 55),
+]
+def hiit_for(i, w):
+    if w['phase'] not in ('BASE', 'BASE2', 'CONS', 'MONT') or i == 0: return None
+    if 'allégée' in (w['note'] or ''): return None
+    if w['phase'] == 'MONT' and i % 2: return None
+    return HIIT[i % len(HIIT)]
+
 def place(i, w):
     d0 = START + dt.timedelta(days=7 * i)
     dates = [d0 + dt.timedelta(days=k) for k in range(7)]
@@ -153,6 +166,9 @@ def place(i, w):
         elif 'plaisir' in k: add(1, k, 'qual', m, True)
         else: add(1, k + (' (ou tapis 10-12 % si météo)' if winter and 'Côtes' in k else ''), 'qual', m, True)
         used += m
+    hx = hiit_for(i, w)
+    if hx:
+        add(3, hx[0], 'hiit', hx[1], True); used += hx[1]
     # renfo : force le mardi soir (jour dur), le second le jeudi
     rdays = [1, 3] if not in_japan[1] else [3, 1]
     for n, k in enumerate(renfo):
@@ -217,7 +233,7 @@ def place(i, w):
     # double si nécessaire
     if rest >= 25 and not (1 in blocked):
         m = r5(min(45, rest)); days[1].append({'t': '2e sortie : tapis facile %s' % fmt_m(m), 'k': 'tapis', 'm': m, 'key': False}); rest -= m
-    order = {'race': 0, 'qual': 1, 'sl': 1, 'piste': 2, 'z2': 2, 'tapis': 3, 'renfo': 4, 'info': 5}
+    order = {'race': 0, 'qual': 1, 'hiit': 1, 'sl': 1, 'piste': 2, 'z2': 2, 'tapis': 3, 'renfo': 4, 'info': 5}
     for d in range(7):
         days[d].sort(key=lambda it: order.get(it['k'], 9))
         if in_japan[d] and not days[d]: days[d].append({'t': 'Japon', 'k': 'info', 'm': None, 'key': False})

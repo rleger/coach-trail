@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Trail 2027</title>
 <meta name="description" content="Hub d'entraînement trail de Romain : plan vers les Forts et le Wildstrubel, séances, renfo.">
-<meta name="theme-color" content="#EEF1EC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Trail">
@@ -19,35 +19,38 @@
 <style>
 /* Mise en page : en-tête compact, onglets collants, une colonne au téléphone, deux au-delà de 860px. */
 :root{
-  --bg:#EEF1EC; --surface:#FFFFFF; --sunk:#E4E9E3; --fg:#17201B; --muted:#56635C; --line:#D3DBD3; --line2:#BFC9C0;
-  --accent:#0E5C70; --accent-ink:#FFFFFF; --ok:#2F7D4A; --warn:#B76E00; --bad:#B8331F; --scrim:rgba(15,20,18,.45);
-  --ph-BASE:#4F74AE; --ph-BASE2:#6A8FC9; --ph-JAPON:#8C9690; --ph-RECUP:#8C9690; --ph-FETES:#A07A9A; --ph-RETOUR:#8C9690; --ph-CONS:#3B8A57; --ph-SPE:#C9821A;
-  --ph-AFF:#8664BF; --ph-RACE1:#C93A27; --ph-MONT:#2B7A6B; --ph-SPE2:#C26E12; --ph-AFF2:#7A5DB3; --ph-RACE2:#C93A27;
+  --bg:#f8fafc; --surface:#ffffff; --sunk:#f1f5f9; --fg:#0f172a; --text:#334155; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
+  --accent:#0e7490; --accent-ink:#ffffff; --head:#0e7490; --ok:#16a34a; --warn:#d97706; --bad:#dc2626; --scrim:rgba(15,23,42,.5);
+  --ph-BASE:#2563eb; --ph-BASE2:#0284c7; --ph-JAPON:#94a3b8; --ph-RECUP:#94a3b8; --ph-FETES:#c026d3; --ph-RETOUR:#94a3b8; --ph-CONS:#059669; --ph-SPE:#d97706;
+  --ph-AFF:#7c3aed; --ph-RACE1:#dc2626; --ph-MONT:#0d9488; --ph-SPE2:#ea580c; --ph-AFF2:#9333ea; --ph-RACE2:#dc2626;
+  --k-sl:#059669; --k-qual:#d97706; --k-hiit:#e11d48; --k-z2:#3b82f6; --k-piste:#6366f1; --k-tapis:#94a3b8; --k-renfo:#0891b2; --k-race:#dc2626; --on-c:#ffffff;
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   --r:10px; color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1412; --surface:#171E1A; --sunk:#1D2621; --fg:#E4EBE6; --muted:#98A69E; --line:#2A3530; --line2:#3A4741;
-  --accent:#58BDD3; --accent-ink:#06232B; --ok:#5DBB7D; --warn:#E0A03C; --bad:#EE7461; --scrim:rgba(0,0,0,.6);
-  --ph-BASE:#7196D0; --ph-BASE2:#8AAEE3; --ph-JAPON:#7E8983; --ph-RECUP:#7E8983; --ph-FETES:#B993B3; --ph-RETOUR:#7E8983; --ph-CONS:#5DB37C; --ph-SPE:#E3A042;
-  --ph-AFF:#A588DA; --ph-RACE1:#EE6A55; --ph-MONT:#4FA996; --ph-SPE2:#E08E36; --ph-AFF2:#9C83D4; --ph-RACE2:#EE6A55;
+  --bg:#020617; --surface:#0f172a; --sunk:#1e293b; --fg:#f8fafc; --text:#cbd5e1; --muted:#94a3b8; --line:#1e293b; --line2:#334155;
+  --accent:#22d3ee; --accent-ink:#083344; --head:#67e8f9; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; --scrim:rgba(0,0,0,.65);
+  --ph-BASE:#60a5fa; --ph-BASE2:#38bdf8; --ph-JAPON:#64748b; --ph-RECUP:#64748b; --ph-FETES:#e879f9; --ph-RETOUR:#64748b; --ph-CONS:#34d399; --ph-SPE:#fbbf24;
+  --ph-AFF:#a78bfa; --ph-RACE1:#f87171; --ph-MONT:#2dd4bf; --ph-SPE2:#fb923c; --ph-AFF2:#c084fc; --ph-RACE2:#f87171;
+  --k-sl:#34d399; --k-qual:#fbbf24; --k-hiit:#fb7185; --k-z2:#60a5fa; --k-piste:#818cf8; --k-tapis:#64748b; --k-renfo:#22d3ee; --k-race:#f87171; --on-c:#020617;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F1412; --surface:#171E1A; --sunk:#1D2621; --fg:#E4EBE6; --muted:#98A69E; --line:#2A3530; --line2:#3A4741;
-  --accent:#58BDD3; --accent-ink:#06232B; --ok:#5DBB7D; --warn:#E0A03C; --bad:#EE7461; --scrim:rgba(0,0,0,.6);
-  --ph-BASE:#7196D0; --ph-BASE2:#8AAEE3; --ph-JAPON:#7E8983; --ph-RECUP:#7E8983; --ph-FETES:#B993B3; --ph-RETOUR:#7E8983; --ph-CONS:#5DB37C; --ph-SPE:#E3A042;
-  --ph-AFF:#A588DA; --ph-RACE1:#EE6A55; --ph-MONT:#4FA996; --ph-SPE2:#E08E36; --ph-AFF2:#9C83D4; --ph-RACE2:#EE6A55;
+  --bg:#020617; --surface:#0f172a; --sunk:#1e293b; --fg:#f8fafc; --text:#cbd5e1; --muted:#94a3b8; --line:#1e293b; --line2:#334155;
+  --accent:#22d3ee; --accent-ink:#083344; --head:#67e8f9; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; --scrim:rgba(0,0,0,.65);
+  --ph-BASE:#60a5fa; --ph-BASE2:#38bdf8; --ph-JAPON:#64748b; --ph-RECUP:#64748b; --ph-FETES:#e879f9; --ph-RETOUR:#64748b; --ph-CONS:#34d399; --ph-SPE:#fbbf24;
+  --ph-AFF:#a78bfa; --ph-RACE1:#f87171; --ph-MONT:#2dd4bf; --ph-SPE2:#fb923c; --ph-AFF2:#c084fc; --ph-RACE2:#f87171;
+  --k-sl:#34d399; --k-qual:#fbbf24; --k-hiit:#fb7185; --k-z2:#60a5fa; --k-piste:#818cf8; --k-tapis:#64748b; --k-renfo:#22d3ee; --k-race:#f87171; --on-c:#020617;
   color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 html.lock{overflow:hidden}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 header.top{padding-block:8px 4px}
 .brand{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:8px}
-h1{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.01em;line-height:1;margin:0;white-space:nowrap}
+h1{color:var(--fg);font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.01em;line-height:1;margin:0;white-space:nowrap}
 .hright{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;min-width:0}
 .counts{display:flex;min-width:0;overflow:hidden}
 .count{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 7px;font-size:12px;white-space:nowrap;margin-right:2px;flex:none}
@@ -72,12 +75,14 @@ section[data-view]{display:grid;gap:16px}
 .grid2{display:grid;gap:16px;grid-template-columns:1fr}
 @media (min-width:860px){.grid2{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
-.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-h2{font-family:var(--f-display);font-weight:600;font-size:24px;line-height:1.1;margin:2px 0 0;text-wrap:balance}
-h3{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0 0 6px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--head)}
+h2{color:var(--fg);font-family:var(--f-display);font-weight:600;font-size:24px;line-height:1.1;margin:2px 0 0;text-wrap:balance}
+h3{color:var(--fg);font-family:var(--f-display);font-weight:600;font-size:19px;margin:0 0 6px}
 p{margin:0}
 .muted{color:var(--muted)} .small{font-size:13px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;color:#fff;background:var(--c,var(--accent));white-space:nowrap}
+p.muted:not(.small){font-size:14px}
+.it label,.sitem .top b,.exo-head b,.daylist .dname,.target b{color:var(--fg)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;color:var(--on-c);background:var(--c,var(--accent));white-space:nowrap}
 .weekhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn,.stepper button{font:inherit;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:9px 13px;cursor:pointer;min-height:40px}
@@ -89,6 +94,7 @@ p{margin:0}
 .targets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
 .target{background:var(--sunk);border-radius:8px;padding:10px;min-width:0}
 .target b{display:block;white-space:nowrap;font-family:var(--f-mono);font-weight:500;font-size:clamp(15px,4.4vw,20px);font-variant-numeric:tabular-nums;line-height:1.2}
+.target b small{font-size:12px;color:var(--muted);font-weight:500}
 .target span{font-size:12px;color:var(--muted)}
 ul.keys{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 ul.keys li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
@@ -124,7 +130,7 @@ dl.kv dt{color:var(--muted);font-size:13px}
 dl.kv dd{margin:0;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
 .flag{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
 .flag:last-child{border-bottom:0}
-.flag b{justify-self:start;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;color:#fff;background:var(--c);white-space:nowrap}
+.flag b{justify-self:start;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;color:var(--on-c);background:var(--c);white-space:nowrap}
 .verdict{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:12px 14px;background:var(--surface)}
 /* renfo */
 .wkbars{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:12px}
@@ -160,13 +166,17 @@ dl.kv dd{margin:0;font-family:var(--f-mono);font-size:13px;font-variant-numeric:
 .it.done label{color:var(--muted);text-decoration:line-through}
 .it.info label{color:var(--muted);font-style:italic}
 .rest{color:var(--muted);font-size:13px;padding-top:3px}
-.k-sl{--c:var(--ok)} .k-qual{--c:var(--warn)} .k-z2{--c:var(--ph-BASE)} .k-piste{--c:var(--ph-BASE2)} .k-tapis{--c:var(--line2)} .k-renfo{--c:var(--accent)} .k-race{--c:var(--bad)} .k-info{--c:transparent}
-.day .tg{display:block;width:100%;font-size:9.5px;letter-spacing:-.02em;font-weight:700;line-height:1.25;padding:0 2px;border-radius:3px;color:#fff;background:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
-.day .tg.k-tapis{color:var(--fg)}
+.k-sl{--c:var(--k-sl)} .k-qual{--c:var(--k-qual)} .k-hiit{--c:var(--k-hiit)} .k-z2{--c:var(--k-z2)} .k-piste{--c:var(--k-piste)} .k-tapis{--c:var(--k-tapis)} .k-renfo{--c:var(--k-renfo)} .k-race{--c:var(--k-race)} .k-info{--c:transparent}
+.it .em{display:inline-block;width:1.35em;text-align:center;margin-right:2px}
+.it label{border-left:3px solid var(--c,transparent);padding-left:7px}
+.day .tg{display:block;width:100%;font-size:10px;letter-spacing:-.03em;font-weight:700;line-height:1.25;padding:0 2px;border-radius:3px;color:var(--on-c);background:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+@media (max-width:374px){.day .tg .tm{display:none}}
+.day .tg.lg{font-size:8.5px;letter-spacing:-.05em;padding:0}
+.day .tg.k-tapis{color:var(--on-c)}
 .day .tg.ok{opacity:.45;text-decoration:line-through}
 .day.sel .tg{outline:1px solid var(--accent-ink)}
 .calrow.dow span{font-size:11px;font-weight:600;color:var(--muted);text-align:center;text-transform:uppercase}
-.wk{border:0;border-radius:6px;background:var(--c);color:#fff;font:inherit;font-size:10px;font-weight:700;font-family:var(--f-mono);cursor:pointer;padding:0;writing-mode:vertical-rl;transform:rotate(180deg)}
+.wk{border:0;border-radius:6px;background:var(--c);color:var(--on-c);font:inherit;font-size:10px;font-weight:700;font-family:var(--f-mono);cursor:pointer;padding:0;writing-mode:vertical-rl;transform:rotate(180deg)}
 .wk.none{background:var(--line)}
 .day{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;min-height:54px;padding:4px 3px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden}
 .day.out{opacity:.38}
@@ -302,6 +312,9 @@ ul.tplx .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-
       <p class="muted small" style="margin-top:8px">Très courbaturant : 48 h minimum avant une SL ou une séance clé.</p></div>
     <div class="card"><div class="eyebrow">Qualité</div><h3>Côtes courtes</h3>
       <ul><li>15-20' d'échauffement, puis 8-10 × 1' à 1'15 en côte de 6 à 10 %</li><li>FC au-dessus de 167 en fin de répétition</li><li>Récup : descente trottinée jusqu'à FC sous 130</li></ul></div>
+    <div class="card"><div class="eyebrow">Qualité · le jeudi</div><h3>⚡ HIIT et 🚴 Zwift</h3>
+      <ul><li>Rotation sur 5 semaines : Zwift 5 × 3' Z5, 30/30 à VMA, Zwift 30/15, tapis en côte 6 × 2' à 8-10 %, Zwift 4 × 4'</li><li>15' d'échauffement progressif, 10' de retour au calme</li><li>FC au-dessus de 170 en fin de répétition, sinon c'est trop court ou trop facile</li><li>Zwift quand c'est un jour de boulot ou quand les jambes sont chargées : même stimulus cardio, aucun coût excentrique avant la SL</li></ul>
+      <p class="muted small" style="margin-top:8px">Pas de HIIT les semaines allégées, au Japon, au retour ni en affûtage. Une semaine sur deux en construction montagne.</p></div>
     <div class="card"><div class="eyebrow">Qualité</div><h3>Côtes longues</h3>
       <ul><li>3-4 × 8 à 12' à allure course : courir sous 12 %, marcher au-dessus de 15 %</li><li>FC 155-165, récup 3-4' en redescendant</li><li>Jusqu'aux Forts sans bâtons, mains sur les cuisses ; avec bâtons ensuite</li></ul></div>
     <div class="card"><div class="eyebrow">Qualité</div><h3>Seuil plat</h3>
@@ -435,6 +448,7 @@ function kindOf(t){
   if (/Renfo|Circuit/.test(t)) return 'Renfo';
   if (/COURSE/.test(t)) return 'Course';
   if (/B2B|SL|Bloc|WE choc/.test(t)) return 'Endurance';
+  if (/HIIT/.test(t)) return 'HIIT';
   if (/Côtes|Seuil|Openers|Descente/.test(t)) return 'Qualité';
   if (/Retest/.test(t)) return 'Test';
   return 'Autre';
@@ -446,13 +460,21 @@ function dayItemsHtml(w, d, pref){
   if (!its.length) return '<div class="rest">Repos</div>';
   return '<div class="its">'+its.map(function(it, j){ var id = itemId(w, d, j), on = isDone(id);
     if (it.k === 'info') return '<div class="it info"><label>'+esc(it.t)+'</label></div>';
-    return '<div class="it '+(it.key?'key ':'')+(on?'done':'')+'"><input type="checkbox" id="'+pref+id+'" data-k="'+id+'" '+(on?'checked':'')+'><label for="'+pref+id+'"><span class="kd k-'+it.k+'"></span>'+esc(it.t)+'</label>'+(tplOf(it.t)?'<button type="button" class="ibtn" data-info="'+tplOf(it.t)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'</div>'; }).join('')+'</div>';
+    return '<div class="it '+(it.key?'key ':'')+(on?'done':'')+'"><input type="checkbox" id="'+pref+id+'" data-k="'+id+'" '+(on?'checked':'')+'><label class="k-'+it.k+'" for="'+pref+id+'"><span class="em" aria-hidden="true">'+emo(it)+'</span>'+esc(it.t)+'</label>'+(tplOf(it.t)?'<button type="button" class="ibtn" data-info="'+tplOf(it.t)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'</div>'; }).join('')+'</div>';
+}
+function emo(it){
+  var t = it.t || '';
+  if (it.k === 'hiit') return /Zwift/.test(t) ? '🚴' : '⚡';
+  if (it.k === 'sl') return /J2/.test(t) ? '🔁' : '🏔️';
+  if (it.k === 'qual') return /Seuil/.test(t) ? '🎯' : /Openers/.test(t) ? '✨' : /plaisir/.test(t) ? '🎉' : /Descente/.test(t) ? '⬇️' : '📈';
+  return { z2: '🏃', piste: '🏟️', tapis: '🏠', renfo: '🏋️', race: '🏁', info: 'ℹ️' }[it.k] || '•';
 }
 function shortTag(it){
   var m = !it.m ? '' : it.m < 60 ? it.m + "'" : hh(it.m/60);
   if (it.k === 'sl') return /J2/.test(it.t) ? 'J2 '+m : 'SL '+m;
   if (it.k === 'qual') return (it.t.match(/^(Côtes|Seuil|Openers|Séance plaisir|Descente)/)||['Qualité'])[0].replace('Séance plaisir','Plaisir');
   if (it.k === 'renfo') return 'Renfo';
+  if (it.k === 'hiit') return /Zwift/.test(it.t) ? 'Zwift' : 'HIIT';
   if (it.k === 'race') return 'COURSE';
   if (it.k === 'tapis') return 'T '+m;
   if (it.k === 'piste') return 'P '+m;
@@ -472,8 +494,8 @@ function renderWeek(){
     '<div class="weekhead"><div><div class="eyebrow">'+status+'</div><h2>Semaine '+w.n+' · '+fmt(d0)+' au '+fmt(d1)+'</h2></div>'+
     '<div class="stepper"><button type="button" id="prev" '+(sel===0?'disabled':'')+' aria-label="Semaine précédente">‹</button><button type="button" id="todayB" '+(sel===CUR?'disabled':'')+'>Aujourd\'hui</button><button type="button" id="next" '+(sel===W.length-1?'disabled':'')+' aria-label="Semaine suivante">›</button></div></div>'+
     '<div style="margin-top:10px"><span class="pill" style="--c:var(--ph-'+w.phase+')">'+esc(ph.name)+'</span></div>'+
-    '<div class="targets"><div class="target"><b>'+(runs.length?hh(Math.round(hDone*4)/4)+' / ':'')+hh(w.h)+'</b><span>'+(isRace?'hors course':runs.length?'heures faites':'heures visées')+'</span></div>'+
-    '<div class="target"><b>'+(runs.length?dpDone.toLocaleString('fr-FR')+' / ':'')+w.dp.toLocaleString('fr-FR')+'</b><span>'+(isRace?'m D+ en course':'m de D+')+'</span></div>'+
+    '<div class="targets"><div class="target"><b>'+(runs.length?hh(Math.round(hDone*4)/4)+'<small> / '+hh(w.h)+'</small>':hh(w.h))+'</b><span>'+(isRace?'hors course':runs.length?'heures faites':'heures visées')+'</span></div>'+
+    '<div class="target"><b>'+(runs.length?dpDone.toLocaleString('fr-FR')+'<small> / '+w.dp.toLocaleString('fr-FR')+'</small>':w.dp.toLocaleString('fr-FR'))+'</b><span>'+(isRace?'m D+ en course':'m de D+')+'</span></div>'+
     '<div class="target"><b>'+nr+(isRace?'':' / 2')+'</b><span>renfo enregistrés</span></div></div>'+
     (w.days ? '<ul class="daylist">'+w.days.map(function(_, d){ var dd = new Date(d0); dd.setDate(dd.getDate()+d);
         return '<li class="'+(iso(dd)===iso(today)?'today':'')+'"><div class="dname">'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][d]+'<small>'+dd.getDate()+'</small>'+((w.work||[]).indexOf(d)>-1?'<em>boulot</em>':'')+'</div>'+dayItemsHtml(w, d, 'w')+'</li>'; }).join('')+'</ul>' : '<ul class="keys">'+keys+'</ul>')+
@@ -801,13 +823,13 @@ function renderCal(){
       var cls = 'day' + (d.getMonth() !== mo ? ' out' : '') + (sp ? ' span' : '') + (di === iso(today) ? ' today' : '') + (di === calSel ? ' sel' : '');
       h += '<button type="button" class="'+cls+'" data-day="'+di+'"'+(sp ? ' style="--c:var('+sp.c+')"' : '')+' aria-label="'+esc(fmt(d,{weekday:'long',day:'numeric',month:'long'}))+(ev.length ? ' : '+esc(ev.map(function(e){ return e.t; }).join(', ')) : '')+(rs.length ? ', '+rs.length+' renfo' : '')+'">'+
         '<span class="dn">'+d.getDate()+'</span>'+(rs.length || rr.length ? '<span class="dots">'+rr.map(function(){ return '<i class="run"></i>'; }).join('')+rs.map(function(x){ return '<i'+(x.mini?' class="mini"':'')+'></i>'; }).join('')+'</span>' : '')+
-        (w && w.days ? (w.days[k]||[]).filter(function(it){ return it.k !== 'info'; }).slice(0,3).map(function(it, j){ var jj = w.days[k].indexOf(it); return '<span class="tg k-'+it.k+(isDone(itemId(w,k,jj))?' ok':'')+'">'+esc(shortTag(it))+'</span>'; }).join('') : '')+
+        (w && w.days ? (w.days[k]||[]).filter(function(it){ return it.k !== 'info'; }).slice(0,3).map(function(it, j){ var jj = w.days[k].indexOf(it); return '<span class="tg k-'+it.k+(it.m >= 100 && /^(sl|z2|piste|tapis)$/.test(it.k) ? ' lg' : '')+(isDone(itemId(w,k,jj))?' ok':'')+'" title="'+esc(it.t)+'">'+emo(it)+(/^(sl|z2|piste|tapis)$/.test(it.k) && it.m ? '<span class="tm">'+esc(it.m + "'")+'</span>' : '')+'</span>'; }).join('') : '')+
         (pt ? '<span class="ev" style="--c:var('+pt.c+')">'+esc(pt.short)+'</span>' : sp && (di === sp.a || d.getDay() === 1) ? '<span class="ev" style="--c:var('+sp.c+')">'+esc(sp.short)+'</span>' : '')+'</button>';
       d.setDate(d.getDate() + 1);
     }
     h += '</div>';
   }
-  h += '</div><p class="muted small" style="margin-top:8px">Étiquettes : séances prévues, barrées une fois faites (P : piste, T : tapis, bleu : footing). Point vert : course enregistrée. Point bleu : renfo (creux : entretien). Bande à gauche : semaine du plan, couleur de la phase.</p></div>';
+  h += '</div><p class="muted small" style="margin-top:8px">Étiquettes : séances prévues, barrées une fois faites. 🏔️ SL · 🔁 J2 · 📈 côtes · ⚡ HIIT · 🚴 Zwift · 🎯 seuil · 🏟️ piste · 🏠 tapis · 🏃 footing · 🏋️ renfo. Point vert : course enregistrée. Point bleu : renfo (creux : entretien). Bande à gauche : semaine du plan, couleur de la phase.</p></div>';
   /* détail du jour */
   var sd = pd(calSel), swi = weekIdx(sd), sw = swi > -1 ? W[swi] : null, sev = eventsOn(calSel), srs = byDay[calSel] || [], srr = runDay[calSel] || [];
   h += '<div class="grid2"><div class="card" data-date="'+calSel+'"><div class="eyebrow">'+(calSel === iso(today) ? 'Aujourd\'hui' : 'Jour choisi')+'</div><h2 style="text-transform:capitalize">'+esc(fmt(sd,{weekday:'long',day:'numeric',month:'long'}))+'</h2>'+
