@@ -6,6 +6,34 @@
    "id": "rmwfeoi7co7zw",
    "del": true,
    "t": 1794600328749
+  },
+  "rmwfeued0ffy1": {
+   "id": "rmwfeued0ffy1",
+   "date": "2026-11-13",
+   "tpl": "",
+   "name": "Renfo",
+   "rpe": null,
+   "note": "",
+   "t": 1794600594808,
+   "items": [
+    {
+     "sets": [
+      {
+       "r": 20,
+       "kg": 8
+      },
+      {
+       "r": 20,
+       "kg": 8
+      },
+      {
+       "r": 20,
+       "kg": 8
+      }
+     ],
+     "ex": "biceps"
+    }
+   ]
   }
  },
  "notes": {}
