@@ -42,3 +42,9 @@ le plus récent (`t`) gagne.
 
 Éditer `PLAN.weeks` dans `data.js` (une entrée par semaine : `phase`, `h` heures, `dp` D+,
 `keys` séances clés, `note`), puis mettre à jour `PLAN.updated` et le nom du cache dans `sw.js`.
+
+### Collections ajoutées
+
+- `tpls` : presets personnels `{id, name, mini, items:[{ex, sets:[{r,kg}]}], t}`.
+- `runs` : sorties écrites par Claude à partir des FIT `{id, date, title, min, km, dp, hr, gap, ef, note, t}`. Claude coche aussi la séance clé correspondante dans `done` (`w{n}k{i}`).
+- `renfo[].mini` : séance d'entretien, hors décompte des 2 séances par semaine.
