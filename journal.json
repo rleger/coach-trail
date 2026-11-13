@@ -34,6 +34,34 @@
      "ex": "biceps"
     }
    ]
+  },
+  "rmwfev48vv7fa": {
+   "id": "rmwfev48vv7fa",
+   "date": "2026-11-13",
+   "tpl": "",
+   "name": "Renfo",
+   "rpe": null,
+   "note": "",
+   "t": 1794600616557,
+   "items": [
+    {
+     "sets": [
+      {
+       "r": 30,
+       "kg": 0
+      },
+      {
+       "r": 30,
+       "kg": 0
+      },
+      {
+       "r": 30,
+       "kg": 0
+      }
+     ],
+     "ex": "fb"
+    }
+   ]
   }
  },
  "notes": {}
