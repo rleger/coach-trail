@@ -4,40 +4,8 @@
  "renfo": {
   "rmwfeoi7co7zw": {
    "id": "rmwfeoi7co7zw",
-   "date": "2026-11-13",
-   "tpl": "B",
-   "name": "Renfo B : excentrique",
-   "rpe": null,
-   "note": "",
-   "t": 1794600313482,
-   "items": [
-    {
-     "sets": [
-      {
-       "r": 60,
-       "kg": 0
-      }
-     ],
-     "ex": "chaise"
-    },
-    {
-     "sets": [
-      {
-       "r": 10,
-       "kg": 0
-      },
-      {
-       "r": 10,
-       "kg": 0
-      },
-      {
-       "r": 10,
-       "kg": 0
-      }
-     ],
-     "ex": "molex"
-    }
-   ]
+   "del": true,
+   "t": 1794600328749
   }
  },
  "notes": {}
