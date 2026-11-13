@@ -138,6 +138,27 @@ dl.kv dd{margin:0;font-family:var(--f-mono);font-size:13px;font-variant-numeric:
 .sitem .top b{font-weight:600}
 .sitem .lines{font-size:13px;color:var(--muted);margin-top:3px}
 .goal{font-family:var(--f-mono);font-size:26px;font-variant-numeric:tabular-nums}
+/* calendrier */
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.calgrid{margin-top:12px;display:grid;gap:3px}
+.calrow{display:grid;grid-template-columns:24px repeat(7,minmax(0,1fr));gap:3px}
+.calrow.dow span{font-size:11px;font-weight:600;color:var(--muted);text-align:center;text-transform:uppercase}
+.wk{border:0;border-radius:6px;background:var(--c);color:#fff;font:inherit;font-size:10px;font-weight:700;font-family:var(--f-mono);cursor:pointer;padding:0;writing-mode:vertical-rl;transform:rotate(180deg)}
+.wk.none{background:var(--line)}
+.day{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;min-height:54px;padding:4px 3px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden}
+.day.out{opacity:.38}
+.day.span{background:color-mix(in srgb,var(--c) 20%,var(--surface))}
+.day.today{border-color:var(--fg);border-width:2px;padding:3px 2px 2px}
+.day.sel{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.day .dn{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;line-height:1.1}
+.day .dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center}
+.day .dots i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.day.sel .dots i{background:var(--accent-ink)}
+.day .ev{font-size:9px;font-weight:700;line-height:1.1;color:var(--c);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day.sel .ev{color:var(--accent-ink)}
+.evlist{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.evlist li{display:flex;gap:8px;align-items:center;font-size:14px}
+.evlist i{width:10px;height:10px;border-radius:3px;background:var(--c);flex:none}
 /* feuilles */
 .sheet{position:fixed;inset:0;z-index:30;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 @media (min-width:720px){.sheet{align-items:center}}
@@ -209,6 +230,7 @@ ul.tplx .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-
 </div></header>
 <nav class="tabs" aria-label="Sections"><div class="wrap" id="tabs">
   <a href="#semaine" data-tab="semaine">Semaine</a>
+  <a href="#cal" data-tab="cal">Calendrier</a>
   <a href="#renfo" data-tab="renfo">Renfo</a>
   <a href="#plan" data-tab="plan">Plan</a>
   <a href="#seances" data-tab="seances">Séances</a>
@@ -218,6 +240,7 @@ ul.tplx .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-
 
 <main class="wrap">
 <section data-view="semaine" id="v-semaine"></section>
+<section data-view="cal" id="v-cal" hidden></section>
 <section data-view="renfo" id="v-renfo" hidden></section>
 
 <section data-view="plan" id="v-plan" hidden>
@@ -651,17 +674,81 @@ document.addEventListener('click', function(e){
   var xi = e.target.closest('[data-exinfo]'); if (xi){ var x = exo(xi.dataset.exinfo); if (x) openInfo(infoHead(x.name)+'<p style="margin-top:4px">'+esc(x.cue||'')+'</p><p class="muted small" style="margin-top:8px">'+(x.unit==='sec'?'En secondes':'En répétitions')+(x.side?', par jambe':'')+'.</p>'); return; }
   if (e.target.closest('[data-opensync]')){ document.getElementById('syncBtn').click(); return; }
   if (e.target.closest('#editSheet,#infoSheet')) return;
-  var n = e.target.closest('[data-new]'); if (n){ openEditor(newSession(n.dataset.new), true); return; }
+  var n = e.target.closest('[data-new]'); if (n){ var ns = newSession(n.dataset.new); var dd = n.closest('[data-date]'); if (dd) ns.date = dd.dataset.date; openEditor(ns, true); return; }
   var ed2 = e.target.closest('[data-edit]'); if (ed2 && J.renfo[ed2.dataset.edit]) openEditor(J.renfo[ed2.dataset.edit], false);
 });
 
+/* ---------- calendrier ---------- */
+var EVENTS = [
+  { a:'2026-12-26', b:'2027-01-11', t:'Japon', short:'Japon', c:'--ph-JAPON', span:true },
+  { a:'2027-01-18', b:'2027-01-31', t:'Fenêtre retest labo', short:'Labo', c:'--ph-BASE2', span:true },
+  { a:'2027-04-24', t:'Dernière grosse SL avant les Forts', short:'SL', c:'--ph-AFF' },
+  { a:'2027-04-28', t:'Renfo stop (J-10)', short:'Stop', c:'--ph-AFF' },
+  { a:'2027-05-08', t:'Trail des Forts, 7h00, La Rodia', short:'Forts', c:'--ph-RACE1' },
+  { a:'2027-05-17', t:'Décision Wild 110 ou 70', short:'Choix', c:'--ph-RECUP' },
+  { a:'2027-08-28', t:'Dernière SL avant le Wild', short:'SL', c:'--ph-AFF2' },
+  { a:'2027-08-31', t:'Renfo stop (J-10)', short:'Stop', c:'--ph-AFF2' },
+  { a:'2027-09-10', t:'Wildstrubel, départ 23h00', short:'Wild', c:'--ph-RACE2' }
+];
+function eventsOn(di){ return EVENTS.filter(function(e){ return e.b ? (di >= e.a && di <= e.b) : di === e.a; }); }
+function weekIdx(d){ var k = Math.floor((monday(d) - pd(W[0].start)) / (7*864e5) + .5); return k >= 0 && k < W.length ? k : -1; }
+var calM = (function(){ var m = LS.get('calM', null); if (m && /^\d{4}-\d{2}$/.test(m)) return m; return iso(today).slice(0,7); })();
+var calSel = iso(today);
+function renderCal(){
+  var y = +calM.slice(0,4), mo = +calM.slice(5,7) - 1, first = new Date(y, mo, 1), start = monday(first), last = new Date(y, mo + 1, 0);
+  var byDay = {}; renfoList().forEach(function(s){ (byDay[s.date] = byDay[s.date] || []).push(s); });
+  var mName = fmt(first, { month: 'long', year: 'numeric' });
+  var h = '<div class="card"><div class="calhead"><h2 style="text-transform:capitalize">'+esc(mName)+'</h2><div class="stepper"><button type="button" data-cm="-1" aria-label="Mois précédent">‹</button><button type="button" data-cm="0">Aujourd\'hui</button><button type="button" data-cm="1" aria-label="Mois suivant">›</button></div></div>'+
+    '<div class="calgrid"><div class="calrow dow"><span></span>'+['L','M','M','J','V','S','D'].map(function(x){ return '<span>'+x+'</span>'; }).join('')+'</div>';
+  for (var d = new Date(start); d <= last; ){
+    var wi = weekIdx(d), w = wi > -1 ? W[wi] : null;
+    h += '<div class="calrow">'+(w ? '<button type="button" class="wk" style="--c:var(--ph-'+w.phase+')" data-gow="'+wi+'" aria-label="Semaine '+w.n+' : '+esc(P[w.phase].name)+'">S'+w.n+'</button>' : '<span class="wk none"></span>');
+    for (var k = 0; k < 7; k++){
+      var di = iso(d), ev = eventsOn(di), sp = ev.filter(function(e){ return e.span; })[0], pt = ev.filter(function(e){ return !e.span; })[0], rs = byDay[di] || [];
+      var cls = 'day' + (d.getMonth() !== mo ? ' out' : '') + (sp ? ' span' : '') + (di === iso(today) ? ' today' : '') + (di === calSel ? ' sel' : '');
+      h += '<button type="button" class="'+cls+'" data-day="'+di+'"'+(sp ? ' style="--c:var('+sp.c+')"' : '')+' aria-label="'+esc(fmt(d,{weekday:'long',day:'numeric',month:'long'}))+(ev.length ? ' : '+esc(ev.map(function(e){ return e.t; }).join(', ')) : '')+(rs.length ? ', '+rs.length+' renfo' : '')+'">'+
+        '<span class="dn">'+d.getDate()+'</span>'+(rs.length ? '<span class="dots">'+rs.map(function(){ return '<i></i>'; }).join('')+'</span>' : '')+
+        (pt ? '<span class="ev" style="--c:var('+pt.c+')">'+esc(pt.short)+'</span>' : sp && (di === sp.a || d.getDay() === 1) ? '<span class="ev" style="--c:var('+sp.c+')">'+esc(sp.short)+'</span>' : '')+'</button>';
+      d.setDate(d.getDate() + 1);
+    }
+    h += '</div>';
+  }
+  h += '</div><p class="muted small" style="margin-top:8px">Point : séance de renfo enregistrée. Bande à gauche : semaine du plan, couleur de la phase.</p></div>';
+  /* détail du jour */
+  var sd = pd(calSel), swi = weekIdx(sd), sw = swi > -1 ? W[swi] : null, sev = eventsOn(calSel), srs = byDay[calSel] || [];
+  h += '<div class="grid2"><div class="card" data-date="'+calSel+'"><div class="eyebrow">'+(calSel === iso(today) ? 'Aujourd\'hui' : 'Jour choisi')+'</div><h2 style="text-transform:capitalize">'+esc(fmt(sd,{weekday:'long',day:'numeric',month:'long'}))+'</h2>'+
+    (sev.length ? '<ul class="evlist">'+sev.map(function(e){ return '<li><i style="--c:var('+e.c+')"></i>'+esc(e.t)+'</li>'; }).join('')+'</ul>' : '')+
+    (srs.length ? '<div class="sess" style="margin-top:10px">'+srs.map(sessItem).join('')+'</div>' : '<p class="muted" style="margin-top:6px">Aucun renfo enregistré ce jour.</p>')+
+    '<div class="eyebrow" style="margin-top:14px">Renfo ce jour</div>'+tplChips('new')+'</div>';
+  if (sw){
+    var keys = sw.keys.map(function(kx, i){ var id = 'w'+sw.n+'k'+i, on = !!(J.done[id] && J.done[id].v);
+      return '<li class="'+(on?'done':'')+'"><input type="checkbox" id="c'+id+'" data-k="'+id+'" '+(on?'checked':'')+'><label for="c'+id+'"><span class="tag">'+kindOf(kx)+'</span>'+esc(kx)+'</label>'+(tplOf(kx)?'<button type="button" class="ibtn" data-info="'+tplOf(kx)+'" aria-label="Contenu de la séance">'+IIC+'</button>':'')+'</li>'; }).join('');
+    var nr = renfoInWeek(sw.start).length;
+    h += '<div class="card" style="--c:var(--ph-'+sw.phase+')"><div class="eyebrow">Semaine '+sw.n+' · '+fmt(pd(sw.start))+'</div><div style="margin-top:6px"><span class="pill" style="--c:var(--ph-'+sw.phase+')">'+esc(P[sw.phase].name)+'</span></div>'+
+      '<div class="targets"><div class="target"><b>'+hh(sw.h)+'</b><span>heures</span></div><div class="target"><b>'+sw.dp.toLocaleString('fr-FR')+'</b><span>m de D+</span></div><div class="target"><b>'+nr+' / 2</b><span>renfo</span></div></div>'+
+      '<ul class="keys">'+keys+'</ul>'+(sw.note?'<div class="note">'+esc(sw.note)+'</div>':'')+
+      '<div class="row"><button type="button" class="btn small" data-gow="'+swi+'">Ouvrir la semaine</button></div></div>';
+  } else h += '<div class="card"><p class="muted">Hors du plan.</p></div>';
+  h += '</div>';
+  var v = document.getElementById('v-cal'); v.innerHTML = h;
+  v.querySelectorAll('ul.keys input[data-k]').forEach(function(cb){ cb.onchange = function(){ J.done[cb.dataset.k] = { v: cb.checked, t: Date.now() }; saveJ(); cb.closest('li').classList.toggle('done', cb.checked); }; });
+}
+document.getElementById('v-cal').addEventListener('click', function(e){
+  var c = e.target.closest('[data-cm]');
+  if (c){ var dm = +c.dataset.cm, y = +calM.slice(0,4), m = +calM.slice(5,7) - 1;
+    if (dm === 0){ calM = iso(today).slice(0,7); calSel = iso(today); } else { var nd = new Date(y, m + dm, 1); calM = iso(nd).slice(0,7); }
+    LS.set('calM', calM); renderCal(); return; }
+  var dy = e.target.closest('[data-day]'); if (dy){ calSel = dy.dataset.day; if (calSel.slice(0,7) !== calM){ calM = calSel.slice(0,7); LS.set('calM', calM); } renderCal(); return; }
+  var g = e.target.closest('[data-gow]'); if (g){ go(+g.dataset.gow); location.hash = 'semaine'; }
+});
+
 /* ---------- routes ---------- */
-var VIEWS = ['semaine','renfo','plan','seances','cadre','courses'], cur = null;
+var VIEWS = ['semaine','cal','renfo','plan','seances','cadre','courses'], cur = null;
 function route(){
   var v = (location.hash||'').slice(1); if (VIEWS.indexOf(v) < 0) v = 'semaine';
   VIEWS.forEach(function(x){ document.getElementById('v-'+x).hidden = x !== v; });
   document.querySelectorAll('#tabs a').forEach(function(a){ a.setAttribute('aria-current', a.dataset.tab === v ? 'page' : 'false'); });
-  if (v === 'semaine') renderWeek(); if (v === 'renfo') renderRenfo();
+  if (v === 'semaine') renderWeek(); if (v === 'renfo') renderRenfo(); if (v === 'cal') renderCal();
   if (cur !== v) window.scrollTo(0,0); cur = v;
 }
 function refresh(){ J = LS.get('journal', J) || J; ['done','renfo','notes','exos'].forEach(function(k){ if (!J[k]) J[k] = {}; }); route(); }
