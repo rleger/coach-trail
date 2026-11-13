@@ -136,6 +136,9 @@ dl.kv dd{margin:0;font-family:var(--f-mono);font-size:13px;font-variant-numeric:
 .sitem{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer}
 .sitem .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .sitem .top b{font-weight:600}
+.sitemw{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:6px}
+.cpy{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.cpy svg{width:18px;height:18px}
 .sitem .lines{font-size:13px;color:var(--muted);margin-top:3px}
 .goal{font-family:var(--f-mono);font-size:26px;font-variant-numeric:tabular-nums}
 /* calendrier */
@@ -499,6 +502,12 @@ function suuntoTitle(s){
   var nm = (s.name||'').trim(), head = !nm || /^renfo$/i.test(nm) ? 'Renfo' : /renfo/i.test(nm) ? nm : 'Renfo '+nm;
   return [head].concat((s.items||[]).map(function(it){ var c = compact(it); return c ? exShort(it)+' '+c : ''; }).filter(Boolean)).join(' · ');
 }
+var CPY = SV('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>');
+function recapText(s){
+  var head = suuntoTitle({ name: s.name, items: [] }) + ' · ' + fmt(pd(s.date), { weekday: 'short', day: 'numeric', month: 'short' }) + (s.rpe ? ' · RPE ' + s.rpe : '');
+  var lines = (s.items||[]).map(function(it){ var ss = setsSummary(it), e = it.ex && exo(it.ex); return ss ? exName(it) + (e && e.side ? ' (par jambe)' : '') + ' : ' + ss : ''; }).filter(Boolean);
+  return [head].concat(lines).concat(s.note ? ['Note : ' + s.note] : []).join('\n');
+}
 function copyText(t, msg){
   function fb(){ var ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} ta.remove(); toast(ok ? msg : 'Copie impossible : sélectionne le texte à la main.'); }
   try{ if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(function(){ toast(msg); }, fb); else fb(); }catch(e){ fb(); }
@@ -508,11 +517,12 @@ function setsSummary(it){
   var same = sets.every(function(s){ return s.r === sets[0].r && (s.kg||0) === (sets[0].kg||0); });
   var unit = u === 'sec' ? ' s' : '';
   if (same) return sets.length+' × '+sets[0].r+unit+(sets[0].kg ? ' à '+String(sets[0].kg).replace('.',',')+' kg' : '');
+  if (sets.every(function(s){ return (s.kg||0) === (sets[0].kg||0); })) return sets.map(function(s){ return s.r; }).join('-')+unit+(sets[0].kg ? ' à '+String(sets[0].kg).replace('.',',')+' kg' : '');
   return sets.map(function(s){ return s.r+unit+(s.kg ? '@'+String(s.kg).replace('.',',') : ''); }).join(', ');
 }
 function sessItem(s){
   var lines = (s.items||[]).map(function(it){ var ss = setsSummary(it); return ss ? esc(exName(it))+' '+ss : ''; }).filter(Boolean).join(' · ');
-  return '<button type="button" class="sitem" data-edit="'+esc(s.id)+'"><div class="top"><b>'+esc(s.name||'Renfo')+'</b><span class="when">'+fmt(pd(s.date),{weekday:'short',day:'numeric',month:'short'})+'</span></div>'+(lines?'<div class="lines">'+lines+'</div>':'')+(s.note?'<div class="lines">'+esc(s.note)+'</div>':'')+'</button>';
+  return '<div class="sitemw"><button type="button" class="sitem" data-edit="'+esc(s.id)+'"><div class="top"><b>'+esc(s.name||'Renfo')+'</b><span class="when">'+fmt(pd(s.date),{weekday:'short',day:'numeric',month:'short'})+'</span></div>'+(lines?'<div class="lines">'+lines+'</div>':'')+(s.note?'<div class="lines">'+esc(s.note)+'</div>':'')+'</button><button type="button" class="cpy" data-copyrec="'+esc(s.id)+'" aria-label="Copier le récap de la séance">'+CPY+'</button></div>';
 }
 function lastFor(exId, beforeId){
   var L = renfoList();
@@ -586,7 +596,7 @@ function renderEditor(focusSel){
       '</div><button type="button" class="btn small addset" data-ed="addset">+ Série</button></div>';
   });
   h += '<div class="search"><label class="eyebrow" for="exSearch">Ajouter un exercice</label><input class="input" id="exSearch" type="search" placeholder="Chercher : fentes, mollets, gainage…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" style="margin-top:4px"><div id="exRes"></div></div>'+
-    '<div class="suunto"><div class="eyebrow">Titre pour Suunto</div><code id="suunto"></code><div class="row" style="margin-top:8px"><button type="button" class="btn small" data-ed="copysuunto">Copier le titre</button></div></div>'+
+    '<div class="suunto"><div class="eyebrow">Titre pour Suunto</div><code id="suunto"></code><div class="row" style="margin-top:8px"><button type="button" class="btn small" data-ed="copysuunto">Copier le titre</button><button type="button" class="btn small" data-ed="copyrecap">Copier le récap complet</button></div></div>'+
     '<div class="field"><label for="edNote">Notes</label><textarea class="input" id="edNote" placeholder="Sensations, courbatures, tempo…">'+esc(ed.note||'')+'</textarea></div>'+
     '<div class="actions"><button type="button" class="btn primary grow" data-ed="save">Enregistrer</button>'+(ed._new?'':'<button type="button" class="btn danger" data-ed="del">'+(delArm?'Confirmer la suppression':'Supprimer')+'</button>')+'<button type="button" class="btn" data-ed="close">Annuler</button></div></div>';
   edSheet.innerHTML = h; renderRes(''); updSuunto();
@@ -615,7 +625,17 @@ edSheet.addEventListener('input', function(e){
   if (e.target.id === 'exSearch'){ renderRes(e.target.value); return; }
   if (e.target.id === 'edName'){ ed.name = e.target.value; updSuunto(); return; }
   var ex = e.target.closest('.exo'); if (!ex) return; var it = ed.items[+ex.dataset.i], f = e.target.dataset.f;
-  if (f === 'r' || f === 'kg'){ it.sets[+e.target.closest('.set').dataset.j][f] = num(e.target.value); updSuunto(); }
+  if (f === 'r' || f === 'kg'){
+    var j = +e.target.closest('.set').dataset.j, v = num(e.target.value), cur = it.sets[j];
+    cur[f] = v; if (cur._a) cur._a[f] = false;
+    /* recopie dans les séries vides (ou remplies automatiquement) du même exercice */
+    it.sets.forEach(function(o, k){
+      if (k <= j) return; o._a = o._a || {};
+      if (o[f] == null || o._a[f]){ o[f] = v; o._a[f] = v != null;
+        var inp = ex.querySelector('.set[data-j="'+k+'"] input[data-f="'+f+'"]'); if (inp) inp.value = v == null ? '' : (f === 'kg' ? kgs(v) : v); }
+    });
+    updSuunto();
+  }
 });
 edSheet.addEventListener('keydown', function(e){
   if (e.key !== 'Enter' || !ed) return;
@@ -640,9 +660,10 @@ edSheet.addEventListener('click', function(e){
   var b = e.target.closest('[data-ed]'); if (!b) return; readEditorFields();
   var a = b.dataset.ed, ex = b.closest('.exo'), it = ex ? ed.items[+ex.dataset.i] : null;
   if (a === 'close') closeEditor();
-  else if (a === 'addset'){ var l = it.sets[it.sets.length-1]; it.sets.push(l ? { r: l.r, kg: l.kg } : { r: null, kg: null }); renderEditor('[data-i="'+ex.dataset.i+'"] .set:last-child input[data-f="r"]'); }
+  else if (a === 'addset'){ var l = it.sets[it.sets.length-1]; it.sets.push(l ? { r: l.r, kg: l.kg, _a: { r: true, kg: true } } : { r: null, kg: null }); renderEditor('[data-i="'+ex.dataset.i+'"] .set:last-child input[data-f="r"]'); }
   else if (a === 'rmset'){ it.sets.splice(+b.closest('.set').dataset.j, 1); renderEditor(); }
   else if (a === 'rmex'){ ed.items.splice(+ex.dataset.i, 1); renderEditor(); }
+  else if (a === 'copyrecap'){ copyText(recapText(ed), 'Récap copié.'); }
   else if (a === 'copysuunto'){ copyText(suuntoTitle(ed), 'Titre copié : colle-le dans Suunto.'); }
   else if (a === 'del'){ if (!delArm){ delArm = true; renderEditor(); return; } J.renfo[ed.id] = { id: ed.id, del: true, t: Date.now() }; saveJ(); closeEditor(); refresh(); toast('Séance supprimée'); }
   else if (a === 'save'){
@@ -673,6 +694,7 @@ document.addEventListener('click', function(e){
   var inf = e.target.closest('[data-info]'); if (inf && TPL[inf.dataset.info]){ e.preventDefault(); openInfo(tplInfo(inf.dataset.info)); return; }
   var xi = e.target.closest('[data-exinfo]'); if (xi){ var x = exo(xi.dataset.exinfo); if (x) openInfo(infoHead(x.name)+'<p style="margin-top:4px">'+esc(x.cue||'')+'</p><p class="muted small" style="margin-top:8px">'+(x.unit==='sec'?'En secondes':'En répétitions')+(x.side?', par jambe':'')+'.</p>'); return; }
   if (e.target.closest('[data-opensync]')){ document.getElementById('syncBtn').click(); return; }
+  var cr = e.target.closest('[data-copyrec]'); if (cr && J.renfo[cr.dataset.copyrec]){ copyText(recapText(J.renfo[cr.dataset.copyrec]), 'Récap de la séance copié.'); return; }
   if (e.target.closest('#editSheet,#infoSheet')) return;
   var n = e.target.closest('[data-new]'); if (n){ var ns = newSession(n.dataset.new); var dd = n.closest('[data-date]'); if (dd) ns.date = dd.dataset.date; openEditor(ns, true); return; }
   var ed2 = e.target.closest('[data-edit]'); if (ed2 && J.renfo[ed2.dataset.edit]) openEditor(J.renfo[ed2.dataset.edit], false);
