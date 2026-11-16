@@ -30,5 +30,19 @@
  "notes": {},
  "exos": {},
  "tpls": {},
- "runs": {}
+ "runs": {
+  "r20261115": {
+   "id": "r20261115",
+   "date": "2026-11-15",
+   "title": "Footing plat (hors Besançon)",
+   "min": 55,
+   "km": 10.1,
+   "dp": 54,
+   "hr": 146,
+   "gap": "5:26",
+   "ef": 75.4,
+   "note": "Z2 sous SV1 hypothétique (87 % sous 152). Découplage 3,5 %. Pas de ZoneSense (pas la ceinture ?). Plat : FC +5 vs le 10/11 à même GAP.",
+   "t": 1794815241104
+  }
+ }
 }
