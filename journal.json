@@ -6,8 +6,8 @@
    "t": 1794601165886
   },
   "w1d0i0": {
-   "v": false,
-   "t": 1794603932838
+   "v": true,
+   "t": 1794852324763
   }
  },
  "renfo": {
@@ -43,6 +43,19 @@
    "ef": 75.4,
    "note": "Z2 sous SV1 hypothétique (87 % sous 152). Découplage 3,5 %. Pas de ZoneSense (pas la ceinture ?). Plat : FC +5 vs le 10/11 à même GAP.",
    "t": 1794815241104
+  },
+  "r20261116": {
+   "id": "r20261116",
+   "date": "2026-11-16",
+   "title": "Boucle maison Z2",
+   "min": 60,
+   "km": 10.1,
+   "dp": 226,
+   "hr": 145,
+   "gap": "5:39",
+   "ef": 71.6,
+   "note": "Remplace la piste Z2. 80 % sous 152. Boucle km 3,2-6 EF 71,6 (repère 71-72), km 6-9 EF 73,1 (repère 76-78). Découplage 6,1 %. Pas de ZoneSense.",
+   "t": 1794852324763
   }
  }
 }
