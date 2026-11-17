@@ -51,7 +51,7 @@ W = [
  ('AFF', 5.0, 1000, ['Openers : 2 × 8\' seuil ou lignes', 'Renfo stop à J-10 (mer. 28/04)'], "2-3 jours off possibles sans perte."),
  ('RACE1', 3.0, 2800, ['Veille : 15-20\' plat + 3-4 lignes', 'COURSE : Trail des Forts, sam. 8 mai 7h00'], "Charge glucidique J-2/J-1 à 8-10 g/kg. Petit-déjeuner 3 h avant. Départ prudent, power-hike sans bâtons > 15 %."),
  ('RECUP', 2.5, 300, ['Marche et vélo souple', 'Aucune course avant escaliers indolores'], ''),
- ('RECUP', 4.0, 600, ['Footings faciles 30-45\'', 'Renfo léger en fin de semaine'], "Décision définitive Wild 110 ou 70 selon la course et la récup."),
+ ('RECUP', 4.0, 600, ['Footings faciles 30-45\'', 'Renfo léger en fin de semaine'], "Bilan de récup après les Forts : on cale la construction montagne vers le Wild 110."),
  ('MONT', 7.0, 2000, [R_A, R_B, 'SL 3h +1300 en montagne', 'Introduire les bâtons en power-hike'], ''),
  ('MONT', 8.5, 2800, [R_A, R_B, 'SL 4h +1800', 'Côtes longues 3 × 12\' avec bâtons'], ''),
  ('MONT', 10.0, 3500, [R_A, R_B, 'B2B : SL 4h +2000, J2 2h30 +1200', 'Côtes courtes 10 × 1\''], ''),
@@ -67,7 +67,7 @@ W = [
  ('AFF2', 10.0, 3500, ['Renfo Excentrique descente léger', 'SL 5h +2500 (J-20, réellement facile)', 'Côtes longues 3 × 10\' bâtons'], ''),
  ('AFF2', 7.0, 2000, ['SL 3h30 +1500 facile (sam. 28/08)', 'Renfo stop à J-10 (mar. 31/08)'], ''),
  ('AFF2', 5.0, 1000, ['Openers courts', '2-3 jours off possibles', 'Décaler le sommeil : siestes'], ''),
- ('RACE2', 3.0, 6600, ['Veille : 15-20\' facile + lignes', 'COURSE : Wild 110, ven. 10 sept. 23h00, Crans-Montana (ou Wild 70, 7h00, Kandersteg)'], "Dormir le vendredi après-midi. Départ très prudent : la nuit et l'altitude font le tri."),
+ ('RACE2', 3.0, 6600, ['Veille : 15-20\' facile + lignes', 'COURSE : Wild 110, ven. 10 sept. 23h00, Crans-Montana'], "Dormir le vendredi après-midi. Départ très prudent : la nuit et l'altitude font le tri."),
 ]
 
 weeks = []
