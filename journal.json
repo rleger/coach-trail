@@ -56,6 +56,19 @@
    "ef": 71.6,
    "note": "Remplace la piste Z2. 80 % sous 152. Boucle km 3,2-6 EF 71,6 (repère 71-72), km 6-9 EF 73,1 (repère 76-78). Découplage 6,1 %. Pas de ZoneSense.",
    "t": 1794852324763
+  },
+  "r20261117": {
+   "id": "r20261117",
+   "date": "2026-11-17",
+   "title": "Boucle maison Z2 (après le boulot)",
+   "min": 61,
+   "km": 10.1,
+   "dp": 219,
+   "hr": 150,
+   "gap": "5:49",
+   "ef": 65.7,
+   "note": "FEU ROUGE. Boucle km 3,2-6 EF 65,7 (alerte sous 69), km 6-9 EF 71,0. Ceinture : ZoneSense 49 min aérobie, 2 min anaérobie. Peu de sommeil, FC diurne min 59 (moy. 54), récup Suunto 35 %.",
+   "t": 1794932617596
   }
  }
 }
