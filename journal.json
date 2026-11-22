@@ -69,6 +69,19 @@
    "ef": 65.7,
    "note": "FEU ROUGE. Boucle km 3,2-6 EF 65,7 (alerte sous 69), km 6-9 EF 71,0. Ceinture : ZoneSense 49 min aérobie, 2 min anaérobie. Peu de sommeil, FC diurne min 59 (moy. 54), récup Suunto 35 %.",
    "t": 1794932617596
+  },
+  "r20261122": {
+   "id": "r20261122",
+   "date": "2026-11-22",
+   "title": "Tapis 5 % (arrêté)",
+   "min": 10,
+   "km": 1.7,
+   "dp": 0,
+   "hr": 119,
+   "gap": "4:17 équiv. plat",
+   "ef": null,
+   "note": "10,8 km/h à 5 % = environ 4:17/km sur le plat, proche du seuil. FC 158-164 après 5 min (début de mesure faussé, pas de ceinture). Arrêté : pas envie.",
+   "t": 1795341647597
   }
  }
 }
