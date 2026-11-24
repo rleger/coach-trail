@@ -128,6 +128,7 @@ def hiit_weeks():
         if w['phase'] not in ('BASE', 'BASE2', 'CONS', 'MONT') or i == 0: continue
         if 'allégée' in (w['note'] or ''): continue
         if w['phase'] == 'MONT' and i % 2: continue
+        if w['phase'] in ('CONS', 'MONT') and 0 in work_days(i): continue
         out.append(i)
     return out
 _HW = None
@@ -187,12 +188,18 @@ def place(i, w):
         add(6, k, 'sl', mins(k) or 120, True); used += mins(k) or 120
     other = [k for k in other if not k.startswith('J2')]
     hx = hiit_for(i, w)
+    mon_work = 0 in work
     if hx:
-        add(0, hx[0], 'hiit', hx[1], True); used += hx[1]
+        add(1 if mon_work else 0, hx[0], 'hiit', hx[1], True); used += hx[1]
+        if mon_work:
+            # lundi de boulot : le HIIT prend le créneau qualité du mardi, les côtes sautent cette semaine
+            dropped = [k for k in qual if 'Côtes' in k]
+            for k in dropped: flt.append({'t': k + ' : remplacées par le HIIT cette semaine (lundi de boulot)', 'k': 'info'})
+            qual = [k for k in qual if k not in dropped]
     # qualité : seuil sur la piste le lundi (mardi si HIIT), le reste le mardi
     for k in qual:
         m = qual_min(k)
-        if 'Seuil' in k: add(1 if hx else 0, k + (' (route plate ou piste)' if hx else ' (piste)'), 'qual', m, True)
+        if 'Seuil' in k: add(1 if (hx or mon_work) else 0, k + (' (route plate ou piste)' if (hx or mon_work) else ' (piste)'), 'qual', m, True)
         elif 'plaisir' in k: add(1, k, 'qual', m, True)
         else: add(1, k + '', 'qual', m, True)
         used += m
@@ -228,19 +235,20 @@ def place(i, w):
     # footings pour compléter les heures
     rest = T - used if ph != 'RECUP' else 0
     slots = []  # (jour, plafond, type, libellé)
-    mon_cap = 60 if 0 in work else 90
-    slots.append((0, mon_cap, 'piste', 'Piste Z2'))
+    if 0 not in work:
+        slots.append((0, 90, 'piste', 'Piste Z2'))
     slots.append((1, 75, 'z2', 'Footing Z2 vallonné'))
     slots.append((3, 50, 'tapis', 'Tapis Z2 (incliné 5-10 % pour le D+)'))
     slots.append((4, 45 if 4 in work else 75, 'tapis' if (4 in work and winter) else 'z2', 'Tapis Z2' if (4 in work and winter) else 'Footing Z2'))
     slots.append((6, 75, 'z2', 'Footing Z2'))
     slots.append((2, 40, 'tapis', 'Tapis facile (matin)'))
+    if 0 in work and ph not in ('AFF', 'AFF2', 'RACE1', 'RACE2', 'RECUP'): slots.append((0, 35, 'tapis', 'Tapis facile (tard, si besoin de volume)'))
     free = []
     for d, cap, k, lab in slots:
         if d in blocked: continue
         if any(it['k'] in ('sl', 'race') for it in days[d]): continue
         have = sum(it['m'] or 0 for it in days[d] if it['k'] != 'renfo')
-        if d == 2 and rest < 200: continue  # mercredi : repos sauf grosse semaine
+        if d in (0, 2) and d in work and rest < 200: continue  # jour de boulot difficile : repos sauf grosse semaine
         free.append([d, max(0, cap - have), k, lab, 0])
     # remplir : répartition proportionnelle aux plafonds, minimum 30'
     while True:
