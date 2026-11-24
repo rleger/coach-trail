@@ -243,6 +243,7 @@ select.input{height:44px}
 .suunto code{display:block;font-family:var(--f-mono);font-size:13px;margin-top:4px;word-break:break-word;color:var(--fg)}
 ul.tplx{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}
 ul.tplx li{border-bottom:1px solid var(--line);padding-bottom:8px}
+ul.tplx .ibtn{vertical-align:middle;width:26px;height:26px}
 ul.tplx .num{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-left:6px}
 .last{font-size:12px;color:var(--muted);margin-top:6px}
 .sets{display:grid;gap:6px;margin-top:8px}
@@ -464,6 +465,8 @@ function effDays(w){
   out.forEach(function(a){ a.sort(function(x, y){ return (ord[x.it.k]||9) - (ord[y.it.k]||9); }); });
   return out;
 }
+var PLAYI = SV('<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/>');
+function vidBtn(e){ return e && e.vid ? '<a class="ibtn" href="'+esc(e.vid)+'" target="_blank" rel="noopener" aria-label="Vidéo : '+esc(e.name)+'" title="Vidéo KOSS Sport">'+PLAYI+'</a>' : ''; }
 var MVI = SV('<path d="M7 7h11l-3-3M17 17H6l3 3"/>');
 function dayItemsHtml(w, d, pref){
   var its = effDays(w)[d];
@@ -687,7 +690,7 @@ function renderEditor(focusSel){
     '<div class="eyebrow" style="margin-top:14px">Ajouter un modèle complet</div>'+tplChips('add');
   ed.items.forEach(function(it, i){
     var e = it.ex && exo(it.ex), u = exUnit(it), last = it.ex ? lastFor(it.ex, ed.id) : null;
-    h += '<div class="exo" data-i="'+i+'"><div class="exo-head"><b>'+esc(exName(it))+'</b>'+(e && e.cue ? '<button type="button" class="ibtn" data-exinfo="'+esc(it.ex)+'" aria-label="Consigne : '+esc(e.name)+'">'+IIC+'</button>' : '')+
+    h += '<div class="exo" data-i="'+i+'"><div class="exo-head"><b>'+esc(exName(it))+'</b>'+vidBtn(e)+(e && e.cue ? '<button type="button" class="ibtn" data-exinfo="'+esc(it.ex)+'" aria-label="Consigne : '+esc(e.name)+'">'+IIC+'</button>' : '')+
       '<button type="button" class="x" data-ed="rmex" aria-label="Retirer '+esc(exName(it))+'">✕</button></div>'+
       (last ? '<div class="last">Dernière fois ('+fmt(pd(last.date))+') : '+esc(setsSummary(last.it))+'</div>' : '')+
       '<div class="sethead"><span>#</span><span>'+(u==='sec'?'Secondes':'Rép.'+(e && e.side?' / jambe':''))+'</span><span>Charge (kg)</span><span></span></div><div class="sets">'+
@@ -790,7 +793,7 @@ function tplInfo(k){
   if (!TPL[k]) return infoHead(T.name)+'<p class="hint">Ton preset'+(T.mini?', entretien du quotidien (ne compte pas comme séance)':'')+'.</p><ul class="tplx">'+T.items.map(function(x){ return '<li><b>'+esc(exName(x))+'</b><span class="num">'+esc(setsSummary(x))+'</span></li>'; }).join('')+'</ul>'+
     '<div class="row"><button type="button" class="btn primary" data-infogo="'+k+'">'+(ed?'Ajouter ces exercices':'Commencer')+'</button><button type="button" class="btn danger" data-delpreset="'+k+'">Supprimer le preset</button></div>';
   return infoHead(T.name)+(T.desc?'<p class="hint">'+esc(T.desc)+'</p>':'')+'<ul class="tplx">'+T.items.map(function(x){ var e = EX[x[0]] || { name: x[0], unit: 'reps' };
-    return '<li><b>'+esc(e.name)+'</b><span class="num">'+x[1]+' × '+x[2]+(e.unit==='sec'?' s':'')+(e.side?' / jambe':'')+'</span>'+(e.cue?'<div class="muted small">'+esc(e.cue)+'</div>':'')+'</li>'; }).join('')+'</ul>'+
+    return '<li><b>'+esc(e.name)+'</b>'+vidBtn(e)+'<span class="num">'+x[1]+' × '+x[2]+(e.unit==='sec'?' s':'')+(e.side?' / jambe':'')+'</span>'+(e.cue?'<div class="muted small">'+esc(e.cue)+'</div>':'')+'</li>'; }).join('')+'</ul>'+
     '<div class="row"><button type="button" class="btn primary" data-infogo="'+k+'">'+(ed?'Ajouter ces exercices':'Commencer cette séance')+'</button><button type="button" class="btn" data-ci="1">Fermer</button></div>';
 }
 infoSheet.addEventListener('click', function(e){
@@ -805,7 +808,7 @@ document.addEventListener('keydown', function(e){ if (e.key !== 'Escape') return
 document.addEventListener('click', function(e){
   var mv = e.target.closest('[data-move]'); if (mv){ openMove(mv.dataset.move, +mv.dataset.wn); return; }
   var inf = e.target.closest('[data-info]'); if (inf && getT(inf.dataset.info)){ e.preventDefault(); openInfo(tplInfo(inf.dataset.info)); return; }
-  var xi = e.target.closest('[data-exinfo]'); if (xi){ var x = exo(xi.dataset.exinfo); if (x) openInfo(infoHead(x.name)+'<p style="margin-top:4px">'+esc(x.cue||'')+'</p><p class="muted small" style="margin-top:8px">'+(x.unit==='sec'?'En secondes':'En répétitions')+(x.side?', par jambe':'')+'.</p>'); return; }
+  var xi = e.target.closest('[data-exinfo]'); if (xi){ var x = exo(xi.dataset.exinfo); if (x) openInfo(infoHead(x.name)+'<p style="margin-top:4px">'+esc(x.cue||'')+'</p>'+(x.vid?'<div class="row"><a class="btn" href="'+esc(x.vid)+'" target="_blank" rel="noopener">▶ Vidéo KOSS Sport</a></div>':'')+'<p class="muted small" style="margin-top:8px">'+(x.unit==='sec'?'En secondes':'En répétitions')+(x.side?', par jambe':'')+'.</p>'); return; }
   if (e.target.closest('[data-opensync]')){ document.getElementById('syncBtn').click(); return; }
   var cr = e.target.closest('[data-copyrec]'); if (cr && J.renfo[cr.dataset.copyrec]){ copyText(recapText(J.renfo[cr.dataset.copyrec]), 'Récap de la séance copié.'); return; }
   if (e.target.closest('#editSheet,#infoSheet')) return;
