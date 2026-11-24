@@ -8,6 +8,10 @@
   "w1d0i0": {
    "v": true,
    "t": 1794852324763
+  },
+  "w2d1i0": {
+   "v": true,
+   "t": 1795515912210
   }
  },
  "renfo": {
@@ -82,6 +86,19 @@
    "ef": null,
    "note": "10,8 km/h à 5 % = environ 4:17/km sur le plat, proche du seuil. FC 158-164 après 5 min (début de mesure faussé, pas de ceinture). Arrêté : pas envie.",
    "t": 1795341647597
+  },
+  "r20261124": {
+   "id": "r20261124",
+   "date": "2026-11-24",
+   "title": "Sortie 12 km avec montée appuyée",
+   "min": 72,
+   "km": 12.0,
+   "dp": 324,
+   "hr": 153,
+   "gap": "5:34",
+   "ef": null,
+   "note": "Qualité de la semaine : ~20 min de montée (km 7,7 à 10,3) à FC 160-179, dont 10 % du temps en Z4-Z5. Plat avant : 10,2 km/h à FC 145. Renfo de 12 min avant la sortie (FC moy. 126).",
+   "t": 1795515912210
   }
  }
 }
