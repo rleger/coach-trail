@@ -38,6 +38,13 @@
     return "rleger/coach-trail";
   }
   function token(){ return LS.get("sync_token") || ""; }
+  /* lien GitHub qui préremplit la clé : nom, Contents en écriture, sans expiration */
+  function newTokenUrl(){
+    var owner = repo().split("/")[0];
+    return "https://github.com/settings/personal-access-tokens/new?name=" + encodeURIComponent("coach-trail-journal") +
+      "&description=" + encodeURIComponent("Journal de l'app Trail 2027 (écriture dans " + repo() + ")") +
+      "&target_name=" + encodeURIComponent(owner) + "&expires_in=none&contents=write";
+  }
   function api(method, path, body){
     return fetch("https://api.github.com/repos/" + repo() + path, {
       method: method, cache: "no-store",
@@ -47,7 +54,7 @@
       var where = method + " " + (path || "/");
       if (r.status === 401) throw { kind: "auth", where: where };
       if (r.status === 403) throw { kind: "forbidden", where: where };
-      if (r.status === 404) throw { kind: "missing", where: where };
+      if (r.status === 404) throw { kind: (method === "PUT" || method === "POST") ? "nowrite" : "missing", where: where };
       if (r.status === 409 || r.status === 422) throw { kind: "conflict", where: where, status: r.status };
       if (!r.ok) throw { kind: "http", status: r.status, where: where };
       return r.status === 204 ? null : r.json();
@@ -96,9 +103,11 @@
         var msg = !e ? "Erreur inconnue" :
           e.kind === "auth" ? "GitHub refuse la clé. Vérifie-la ou crée-en une nouvelle." :
           e.kind === "forbidden" ? "La clé n'a pas le droit d'écrire dans ce dépôt (Contents : Read and write)." :
-          e.kind === "missing" ? "Cette clé ne voit pas " + repo() + ". Dans la clé : Repository access → Only select repositories → coach-trail, et Contents en Read and write." :
+          e.kind === "nowrite" ? "La clé lit le dépôt (il est public) mais n'a pas le droit d'y écrire. Cause habituelle : « Public repositories » choisi au lieu de « Only select repositories → coach-trail », ou Contents en Read-only. Crée une nouvelle clé avec le bouton ci-dessous." :
+          e.kind === "missing" ? "Cette clé ne voit pas " + repo() + ". Crée une nouvelle clé avec le bouton ci-dessous." :
           e.kind === "net" ? "GitHub injoignable. Nouvel essai plus tard." : "Erreur GitHub " + (e.status || "");
-        if (e && e.where) msg += " [" + (e.status || (e.kind === "missing" ? 404 : e.kind === "forbidden" ? 403 : e.kind === "auth" ? 401 : "")) + " · " + e.where + "]";
+        if (e && e.where) msg += " [" + (e.status || (e.kind === "missing" || e.kind === "nowrite" ? 404 : e.kind === "forbidden" ? 403 : e.kind === "auth" ? 401 : "")) + " · " + e.where + "]";
+        if (e && (e.kind === "auth" || e.kind === "forbidden" || e.kind === "missing" || e.kind === "nowrite")) LS.set("sync_bad", "1");
         setStatus(e && e.kind === "net" ? "off" : "error", msg);
         return false;
       });
@@ -134,11 +143,13 @@
     if (on){
       h += '<p class="sync-state s-' + st + '">' + (st === "busy" ? "Synchronisation…" : st === "error" ? esc(lastErr || "Erreur") : st === "off" ? "Hors ligne : tout est gardé ici et partira plus tard." : "Synchronisé " + ago(+(LS.get("sync_last") || 0))) + '</p>' +
         '<p class="hint">Journal enregistré dans <b>' + esc(repo()) + '</b>, branche <b>' + BRANCH + '</b>, fichier <b>' + FILE + '</b>. Claude le lit à cet endroit.</p>' +
-        '<div class="row"><button type="button" class="btn primary" data-sync="now">Synchroniser</button><button type="button" class="btn" data-sync="off">Déconnecter cet appareil</button></div>';
+        (st === "error" ? '<div class="row"><a class="btn primary" href="' + newTokenUrl() + '" target="_blank" rel="noopener">Créer une nouvelle clé</a><button type="button" class="btn" data-sync="replace">Coller la nouvelle clé</button></div>' : '') +
+        '<div class="row"><button type="button" class="btn' + (st === "error" ? '' : ' primary') + '" data-sync="now">Synchroniser</button><button type="button" class="btn" data-sync="off">Déconnecter cet appareil</button></div>';
     } else {
-      h += '<p class="hint">Colle une clé GitHub limitée à ce dépôt. La même clé sert sur le téléphone et l\'ordinateur.</p>' +
-        '<ol class="steps"><li>github.com : Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.</li>' +
-        '<li>Repository access : <b>Only select repositories</b> → ' + esc(repo()) + '.</li><li>Permissions → Repository → <b>Contents : Read and write</b>. Rien d\'autre.</li><li>Copie la clé (github_pat_…) et colle-la ici.</li></ol>' +
+      h += '<p class="hint">Une clé GitHub limitée à ce dépôt, sans date d\'expiration. La même clé sert sur le téléphone et l\'ordinateur.</p>' +
+        '<ol class="steps"><li><a href="' + newTokenUrl() + '" target="_blank" rel="noopener"><b>Ouvrir GitHub avec la clé préremplie</b></a> (nom, Contents en écriture, sans expiration).</li>' +
+        '<li>Repository access : <b>Only select repositories</b> → <b>' + esc(repo().split("/")[1]) + '</b>. Surtout pas « Public repositories » : celui-là ne donne que la lecture.</li>' +
+        '<li>Generate token, copie la clé (github_pat_…) et colle-la ici.</li></ol>' +
         '<input type="password" id="syncTok" class="input" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false">' +
         '<div class="row"><button type="button" class="btn primary" data-sync="connect">Connecter</button></div>';
     }
@@ -158,14 +169,15 @@
         var v = (document.getElementById("syncTok").value || "").trim();
         if (!/^(ghp_|github_pat_)[A-Za-z0-9_]{20,}$/.test(v)){ A.toast("Ce n'est pas une clé GitHub (github_pat_…)."); return; }
         LS.set("sync_token", v); renderSheet();
-        syncNow().then(function(ok){ if (ok) A.toast("Connecté : cet appareil se synchronise."); });
+        syncNow().then(function(ok){ if (ok){ LS.del("sync_bad"); A.toast("Clé vérifiée en écriture : cet appareil se synchronise."); } else open(); });
         break;
-      case "off": ["sync_token", "sync_last"].forEach(LS.del); btn.removeAttribute("data-state"); A.toast("Cet appareil ne se synchronise plus. Le journal reste ici."); renderSheet(); break;
+      case "replace": ["sync_token", "sync_bad"].forEach(LS.del); btn.removeAttribute("data-state"); renderSheet(); var ti = document.getElementById("syncTok"); if (ti) ti.focus(); break;
+      case "off": ["sync_token", "sync_last", "sync_bad"].forEach(LS.del); btn.removeAttribute("data-state"); A.toast("Cet appareil ne se synchronise plus. Le journal reste ici."); renderSheet(); break;
       case "dl": download(); break;
       case "imp": document.getElementById("syncFile").click(); break;
     }
   });
   sheet.addEventListener("change", function(e){ if (e.target.id === "syncFile" && e.target.files[0]) importFile(e.target.files[0]); });
   document.addEventListener("keydown", function(e){ if (!sheet.hidden && e.key === "Escape") close(); });
-  if (token()){ btn.setAttribute("data-state", "ok"); setTimeout(syncNow, 300); }
+  if (token()){ btn.setAttribute("data-state", "ok"); setTimeout(function(){ syncNow().then(function(ok){ if (ok) LS.del("sync_bad"); }); }, 300); }
 })(typeof window !== "undefined" ? window : globalThis);
