@@ -29,10 +29,177 @@
    "id": "rmwfev48vv7fa",
    "del": true,
    "t": 1794601090473
+  },
+  "rmwt36muildk2": {
+   "id": "rmwt36muildk2",
+   "date": "2026-11-22",
+   "tpl": "",
+   "mini": false,
+   "name": "Renfo",
+   "rpe": null,
+   "note": "",
+   "t": 1795427604445,
+   "items": [
+    {
+     "sets": [
+      {
+       "r": 12,
+       "kg": 12
+      },
+      {
+       "r": 12,
+       "kg": 12
+      },
+      {
+       "r": 12,
+       "kg": 12
+      }
+     ],
+     "ex": "squat"
+    },
+    {
+     "sets": [
+      {
+       "r": 30,
+       "kg": 0
+      }
+     ],
+     "ex": "pompes"
+    },
+    {
+     "sets": [
+      {
+       "r": 15,
+       "kg": 12
+      },
+      {
+       "r": 15,
+       "kg": 12
+      }
+     ],
+     "ex": "mol1"
+    },
+    {
+     "sets": [
+      {
+       "r": 20,
+       "kg": 7.5
+      },
+      {
+       "r": 20,
+       "kg": 7.5
+      }
+     ],
+     "ex": "biceps"
+    },
+    {
+     "sets": [
+      {
+       "r": 60,
+       "kg": 0
+      }
+     ],
+     "ex": "gainage"
+    }
+   ]
+  },
+  "rmwueyon3npt9": {
+   "id": "rmwueyon3npt9",
+   "date": "2026-11-24",
+   "tpl": "A",
+   "mini": false,
+   "name": "Force jambes",
+   "rpe": null,
+   "note": "",
+   "t": 1795508025261,
+   "items": [
+    {
+     "sets": [
+      {
+       "r": 15,
+       "kg": 12
+      },
+      {
+       "r": 15,
+       "kg": 12
+      }
+     ],
+     "ex": "mol1"
+    },
+    {
+     "sets": [
+      {
+       "r": 30,
+       "kg": 0
+      }
+     ],
+     "ex": "pompes"
+    },
+    {
+     "sets": [
+      {
+       "r": 20,
+       "kg": 7.5
+      },
+      {
+       "r": 20,
+       "kg": 7.5
+      }
+     ],
+     "ex": "biceps"
+    },
+    {
+     "sets": [
+      {
+       "r": 60,
+       "kg": 0
+      }
+     ],
+     "ex": "gainage"
+    },
+    {
+     "sets": [
+      {
+       "r": 15,
+       "kg": 12
+      },
+      {
+       "r": 15,
+       "kg": 12
+      },
+      {
+       "r": 15,
+       "kg": 12
+      }
+     ],
+     "ex": "squat"
+    },
+    {
+     "sets": [
+      {
+       "r": 20,
+       "kg": 12
+      },
+      {
+       "r": 20,
+       "kg": 12
+      }
+     ],
+     "ex": "umwuf16xk"
+    }
+   ]
   }
  },
  "notes": {},
- "exos": {},
+ "exos": {
+  "umwuf16xk": {
+   "id": "umwuf16xk",
+   "name": "Tirage menton",
+   "short": "Tirage menton",
+   "unit": "reps",
+   "t": 1795507880024
+  }
+ },
  "tpls": {},
  "runs": {
   "r20261115": {
@@ -92,7 +259,7 @@
    "date": "2026-11-24",
    "title": "Sortie 12 km avec montée appuyée",
    "min": 72,
-   "km": 12.0,
+   "km": 12,
    "dp": 324,
    "hr": 153,
    "gap": "5:34",
@@ -100,5 +267,6 @@
    "note": "Qualité de la semaine, au feeling dans les côtes. ZoneSense : 57 min aérobie, 4,6 min anaérobie, 0 VO2max. FC 160-179 sur ~20 min de montée (km 7,7 à 10,3). Plat : 10,2 km/h à FC 145. Renfo de 12 min avant.",
    "t": 1795516099476
   }
- }
+ },
+ "moves": {}
 }
