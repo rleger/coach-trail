@@ -650,11 +650,30 @@ function renderRenfo(){
     pk.map(function(k){ var p = prog[k]; return '<tr><td>'+esc(p.name)+'</td><td><span class="num">'+esc(p.last.s)+'</span><div class="when">'+fmt(pd(p.last.date))+'</div></td><td class="num">'+(p.best.kg ? String(p.best.kg).replace('.',',')+' kg × '+p.best.r : p.best.r+(p.unit==='sec'?' s':' rép.'))+'</td></tr>'; }).join('')+'</tbody></table></div>'
     : '<p class="muted" style="margin-top:6px">La progression apparaîtra après la première séance enregistrée.</p>')+
     '<div class="row"><button type="button" class="btn small" id="copyCoach">Copier le résumé pour Claude</button></div></div></div>';
+  if (isDone('mat_halt')) html += matCard(); else html = matCard() + html;
   var tokOn = false; try{ tokOn = !!localStorage.getItem('sync_token'); }catch(e){}
   if (!tokOn) html += '<div class="card" style="border-color:var(--warn)"><div class="eyebrow">Synchronisation</div><p style="margin-top:4px">Pas encore connectée : le journal reste sur cet appareil seulement.</p><div class="row"><button type="button" class="btn primary" data-opensync="1">Connecter avec la clé GitHub</button></div></div>';
   html += '<div class="card"><div class="eyebrow">Historique</div>'+(L.length ? '<div class="sess" style="margin-top:8px">'+L.map(sessItem).join('')+'</div>' : '<p class="muted" style="margin-top:6px">Aucune séance pour l\'instant. « + Séance » pour partir de zéro, ou un modèle pour tout préremplir.</p>')+'</div>';
-  document.getElementById('v-renfo').innerHTML = html;
+  document.getElementById('v-renfo').innerHTML = html; bindChecks(document.getElementById('v-renfo'));
   var cb = document.getElementById('copyCoach'); if (cb) cb.onclick = function(){ copyText(coachText(), 'Résumé copié : colle-le dans la conversation.'); };
+}
+/* ---------- matériel ---------- */
+var MAT = [
+  { id: 'mat_halt', prio: 1, t: 'Paire d\'haltères réglables jusqu\'à 24-25 kg chacun (≈ 50 kg au total)',
+    d: 'Le plus pratique : à sélecteur (molette ou goupille), la charge change en 2 s entre deux exercices. Le moins cher : 2 barres courtes + ≈ 50 kg de disques en fonte ; vérifier que la barre accepte 25 kg par côté. Commander en ligne avec livraison si le magasin coince.',
+    why: 'Fentes bulgares 2 × 18-24 kg et soulevé de terre 1 jambe 2 × 20-25 kg d\'ici 2-3 mois : impossible avec 7,5 kg + 12 kg.' },
+  { id: 'mat_box', prio: 2, t: 'Banc ou caisse stable à hauteur de genou (≈ 45-50 cm)',
+    d: 'Seulement si tu n\'as pas déjà un banc solide : step-up, step-down, fentes bulgares.', why: '' },
+  { id: 'mat_kb', prio: 3, t: 'Kettlebell 20 ou 24 kg (plus tard, en option)',
+    d: 'Goblet squat lourd, soulevé de terre 2 jambes, swings.', why: '' }
+];
+var HAVE = 'Déjà là : 2 haltères de 7,5 kg, 2 kettlebells de 4 kg, 1 kettlebell de 12 kg, tapis (pente max 12 %), Zwift, ceinture cardio Suunto.';
+function matCard(){
+  var left = MAT.filter(function(m){ return !isDone(m.id); }).length;
+  return '<div class="card"'+(left && !isDone('mat_halt') ? ' style="border-color:var(--warn)"' : '')+'><div class="eyebrow">🛒 Matériel à acheter</div>'+
+    '<ul class="keys" style="margin-top:8px">'+MAT.map(function(m){ var on = isDone(m.id);
+      return '<li class="'+(on?'done':'')+'"><input type="checkbox" id="'+m.id+'" data-k="'+m.id+'" '+(on?'checked':'')+'><label for="'+m.id+'"><span class="tag">'+(m.prio===1?'Priorité':m.prio===2?'Si besoin':'Plus tard')+'</span><b>'+esc(m.t)+'</b><div class="muted small" style="margin-top:3px">'+esc(m.d)+'</div>'+(m.why?'<div class="small" style="margin-top:3px">'+esc(m.why)+'</div>':'')+'</label></li>'; }).join('')+'</ul>'+
+    '<p class="muted small" style="margin-top:10px">'+esc(HAVE)+' Coche quand c\'est acheté.</p></div>';
 }
 function coachText(){
   var L = renfoList().slice(0, 30);
