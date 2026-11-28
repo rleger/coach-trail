@@ -16,6 +16,10 @@
   "w2d1i1": {
    "v": true,
    "t": 1795517240194
+  },
+  "w2d4i0": {
+   "v": true,
+   "t": 1795858793733
   }
  },
  "renfo": {
@@ -270,6 +274,19 @@
    "ef": null,
    "note": "Qualité de la semaine, au feeling dans les côtes. ZoneSense : 57 min aérobie, 4,6 min anaérobie, 0 VO2max. FC 160-179 sur ~20 min de montée (km 7,7 à 10,3). Plat : 10,2 km/h à FC 145. Renfo de 12 min avant.",
    "t": 1795516099476
+  },
+  "r20261127": {
+   "id": "r20261127",
+   "date": "2026-11-27",
+   "title": "Boucle maison Z2",
+   "min": 59,
+   "km": 10.1,
+   "dp": 230,
+   "hr": 154,
+   "gap": "5:35",
+   "ef": 66.3,
+   "note": "FEU ORANGE. Boucle km 3,2-6 EF 66,3 (alerte sous 69), km 6-9 EF 71,8. FC 151-161 sur du Z2. ZoneSense : 47 min aérobie, 2,4 min anaérobie. FC absente les 2 premiers km (capteur).",
+   "t": 1795858793733
   }
  },
  "moves": {}
