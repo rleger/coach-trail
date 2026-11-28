@@ -20,6 +20,10 @@
   "w2d4i0": {
    "v": true,
    "t": 1795858793733
+  },
+  "w2d5i0": {
+   "v": true,
+   "t": 1795869364086
   }
  },
  "renfo": {
@@ -287,6 +291,19 @@
    "ef": 66.3,
    "note": "FEU ORANGE. Boucle km 3,2-6 EF 66,3 (alerte sous 69), km 6-9 EF 71,8. FC 151-161 sur du Z2. ZoneSense : 47 min aérobie, 2,4 min anaérobie. FC absente les 2 premiers km (capteur).",
    "t": 1795858793733
+  },
+  "r20261128": {
+   "id": "r20261128",
+   "date": "2026-11-28",
+   "title": "Footing à deux + fartlek",
+   "min": 112,
+   "km": 16.4,
+   "dp": 286,
+   "hr": 145,
+   "gap": "6:40",
+   "ef": null,
+   "note": "8 × ~1' sur le plat à 16,4-17,6 km/h (3:25-3:40/km), FC fin de rép. 170-175, max 178 ; puis 3 efforts en côte (FC 168-176). ZoneSense : 101 min aérobie, 3,8 min anaérobie. Le reste en footing lent avec sa copine.",
+   "t": 1795869364086
   }
  },
  "moves": {}
